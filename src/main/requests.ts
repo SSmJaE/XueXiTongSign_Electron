@@ -3,7 +3,12 @@ import queryString from "query-string";
 import axiosCookieJarSupport from "axios-cookiejar-support";
 import tough from "tough-cookie";
 
-import db from "@src/utils/database";
+// 和renderer公用一个db，会出现数据未同步的问题，不知道为什么
+import low from "lowdb";
+import FileSync from "lowdb/adapters/FileSync";
+
+const adapter = new FileSync<IDataBase>("db.json");
+const db = low(adapter);
 
 axiosCookieJarSupport(axios);
 
@@ -82,7 +87,12 @@ export async function isCookieValid(cookie: string) {
         },
     });
 
-    return response.includes("用户登录") ? false : true;
+    try {
+        return response.includes("用户登录") ? false : true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }
 
 export async function getCourses(): Promise<string> {

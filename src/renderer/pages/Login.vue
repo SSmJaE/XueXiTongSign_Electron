@@ -71,12 +71,12 @@ export default class Login extends mixins(WithLogNotify) {
   }
 
   async updateCookie() {
-    // const uid=
+    const uid = /UID=(\d*)/.exec(this.cookie)![1];
 
     // 同步至db
     userModule.updateUser({
-      // uid,
-      // cookie,
+      uid: parseInt(uid),
+      cookie: this.cookie,
     });
   }
 

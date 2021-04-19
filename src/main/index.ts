@@ -25,8 +25,10 @@ const createWindow = (): void => {
     // and load the index.html of the app.
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools({ mode: "undocked" });
+    if (process.env.NODE_ENV === "development") {
+        // Open the DevTools.
+        mainWindow.webContents.openDevTools({ mode: "undocked" });
+    }
 };
 
 // This method will be called when Electron has finished
