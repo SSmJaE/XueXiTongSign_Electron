@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "ESNext",
+      "dom",
+      "dom.iterable"
+    ],
+    "allowJs": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "paths": {
+      "@src/*": [
+        "src/*"
+      ],
+      "@main/*": [
+        "src/main/*"
+      ],
+      "@renderer/*": [
+        "src/renderer/*"
+      ],
+      "@store/*": [
+        "src/renderer/store/*"
+      ],
+      "@components/*": [
+        "src/renderer/components/*"
+      ],
+    },
+    "typeRoots": [
+      "./node_modules/@types/",
+      "./src/types/"
+    ],
+  },
+  "include": [
+    "src/**/*"
+  ]
+}
