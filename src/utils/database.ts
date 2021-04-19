@@ -13,6 +13,7 @@ db.defaults<IDataBase>({
         password: "",
         cookie: "",
         lastUpdateTime: new Date(),
+        hasTakenGuide: false,
     },
     tasks: [],
     parsedUTC: {},

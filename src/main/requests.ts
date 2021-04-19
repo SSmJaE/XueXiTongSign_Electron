@@ -3,21 +3,7 @@ import queryString from "query-string";
 import axiosCookieJarSupport from "axios-cookiejar-support";
 import tough from "tough-cookie";
 
-// 和renderer公用一个db，会出现数据未同步的问题，不知道为什么
-import low from "lowdb";
-import FileSync from "lowdb/adapters/FileSync";
-
-const adapter = new FileSync<IDataBase>("db.json");
-const db = low(adapter);
-
 axiosCookieJarSupport(axios);
-
-function getCookie() {
-    return db
-        .get("user")
-        .get("cookie")
-        .value();
-}
 
 const cookieJar = new tough.CookieJar();
 
@@ -95,10 +81,10 @@ export async function isCookieValid(cookie: string) {
     }
 }
 
-export async function getCourses(): Promise<string> {
+export async function getCourses(cookie: string): Promise<string> {
     return await axios.get("https://mooc2-ans.chaoxing.com/visit/courses/list", {
         headers: {
-            Cookie: getCookie(),
+            Cookie: cookie,
             "User-Agent": PC_AGENT,
         },
         params: {
@@ -111,13 +97,14 @@ export async function getCourses(): Promise<string> {
 }
 
 export async function getActivities({
+    cookie,
     courseId,
     classId,
     uid,
 }: IGetActivities): Promise<IGetActivitiesReturn> {
     return await axios.get(`https://mobilelearn.chaoxing.com/ppt/activeAPI/taskactivelist`, {
         headers: {
-            Cookie: getCookie(),
+            Cookie: cookie,
             "User-Agent":
                 "Dalvik/2.1.0 (Linux; U; Android 10; MI 8 MIUI/V12.0.3.0.QEACNXM) com.chaoxing.mobile/ChaoXingStudy_3_4.7.4_android_phone_593_53 (@Kalimdor)_df14728a529c4e608a7b8f1112ca2825",
         },
@@ -129,10 +116,10 @@ export async function getActivities({
     });
 }
 
-export async function sign({ activeId, uid }: ISign): Promise<string> {
+export async function sign({ cookie, activeId, uid }: ISign): Promise<string> {
     return await axios.get("https://mobilelearn.chaoxing.com/pptSign/stuSignajax", {
         headers: {
-            Cookie: getCookie(),
+            Cookie: cookie,
             "User-Agent":
                 "Dalvik/2.1.0 (Linux; U; Android 10; MI 8 MIUI/V12.0.3.0.QEACNXM) com.chaoxing.mobile/ChaoXingStudy_3_4.7.4_android_phone_593_53 (@Kalimdor)_df14728a529c4e608a7b8f1112ca2825",
         },

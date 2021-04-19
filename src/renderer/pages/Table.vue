@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="tasks" style="width: 100%" row-key="id">
+  <el-table :data="tasks" style="width: 100%" row-key="id" id="task-table">
     <el-table-column label="课程名称">
       <template slot-scope="scope">
         {{ scope.row.courseName }}
@@ -37,12 +37,17 @@
 
     <el-table-column label="操作">
       <template slot-scope="scope">
-        <el-button size="mini" @click="enableItemEdit('update', scope.row)"
-          >编辑</el-button
-        >
-        <el-button size="mini" type="danger" @click="deleteItem(scope.row)"
-          >删除</el-button
-        >
+        <div class="task-actions">
+          <el-button
+            size="mini"
+            @click="enableItemEdit('update', scope.row)"
+            class="task-edit"
+            >编辑</el-button
+          >
+          <el-button size="mini" type="danger" @click="deleteItem(scope.row)"
+            >删除</el-button
+          >
+        </div>
       </template>
     </el-table-column>
   </el-table>
@@ -50,6 +55,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+
+import eventBus from "@renderer/EventBus";
 
 import taskModule from "@store/task";
 import { formatDate, formatTime } from "@src/utils/common";
@@ -70,6 +77,29 @@ export default class Table extends Vue {
   deleteItem(row: ITask) {
     console.log(row);
     taskModule.deleteTask(row.id);
+  }
+
+  created() {
+    eventBus.$on("fake-tasks", () => {
+      taskModule.fakeTask({
+        courseName: "某门课程",
+        courseId: 211345835,
+        classId: 37600759,
+        targetActiveType: [2],
+        dateRange: ["2021-04-01T00:00:00.000Z", "2021-06-01T00:00:00.000Z"],
+        courseTime: [
+          {
+            key: 0.18471351413648462,
+            day: 4,
+            timeRange: ["2021-04-15T08:36:38.000Z", "2021-04-15T13:36:38.000Z"],
+          },
+        ],
+      } as any);
+    });
+
+    eventBus.$on("back-to-normal", () => {
+      taskModule.getTasks();
+    });
   }
 }
 </script>

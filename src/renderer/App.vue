@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import { mixins } from "vue-class-component";
 
 import { WithLogNotify } from "./mixins/common";
@@ -71,6 +71,10 @@ export default class App extends mixins(WithLogNotify) {
 
       logger.success(`normal类型签到成功`);
 
+      new Notification("签到小工具", {
+        body: `${task.courseName}签到成功`,
+      });
+
       taskModule.saveSigned(activity.id);
     });
 
@@ -101,6 +105,8 @@ export default class App extends mixins(WithLogNotify) {
     this.startHeartBeat();
 
     logger.success("初始化成功");
+
+    // this.intro();
   }
 
   async startHeartBeat() {
@@ -114,8 +120,13 @@ export default class App extends mixins(WithLogNotify) {
       // 获取unix
       const current = Math.floor(Date.now() / 1000);
 
-      if (current - lastHeartBeatTime > 9.5) {
-        logger.debug("心跳 in heartBeart");
+      if (lastHeartBeatTime === 0 || current - lastHeartBeatTime > 60) {
+        logger.debug("检测当前活跃任务");
+        this.refreshActiveTasks();
+      }
+
+      if (lastHeartBeatTime === 0 || current - lastHeartBeatTime > 9.5) {
+        logger.debug("任务队列心跳");
         lastHeartBeatTime = current;
       }
 
@@ -181,6 +192,16 @@ export default class App extends mixins(WithLogNotify) {
       (activity) => !signedActivities.includes(activity.id)
     );
 
+    if (newActivities.length) {
+      this.withLogNotify({
+        level: "success",
+        title: "有新签到",
+        message: `检测到${task.courseName}的新签到活动`,
+      });
+    } else {
+      logger.info(`${task.courseName}无新签到`);
+    }
+
     for (const activity of newActivities) {
       // 如果有新活动，判断活动类型，emit
       // const activityType = this.figureSignType(activity);
@@ -188,6 +209,31 @@ export default class App extends mixins(WithLogNotify) {
       // watcher.emit(activityType, task, activity);
       watcher.emit("normal", task, activity);
     }
+  }
+
+  refreshActiveTasks() {
+    const buffer: string[] = [];
+
+    const current = Math.floor(Date.now() / 1000);
+
+    for (const [taskId, { UTC }] of ObjectEntries(taskModule.parsedUTC)) {
+      if (UTC) {
+        for (const [start, end] of UTC) {
+          if (start <= current && current <= end) {
+            const currentCourseName = db
+              .get("tasks")
+              .find({ id: taskId })
+              .get("courseName")
+              .value();
+
+            buffer.push(currentCourseName);
+          }
+        }
+      }
+    }
+
+    taskModule.refreshActiveTasks(buffer);
+    logger.debug(`当前活跃任务 ${buffer.length ? buffer.join("，") : "无"}`);
   }
 }
 </script>

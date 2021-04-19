@@ -3,6 +3,7 @@
     title="签到任务"
     :visible.sync="ItemEditDialogVisibility"
     width="700px"
+    id="task-form"
   >
     <el-form
       :model="itemBuffer"
@@ -26,7 +27,7 @@
         </el-row>
       </el-form-item>
 
-      <el-form-item label="日期范围" prop="daterange">
+      <el-form-item label="日期范围" prop="daterange" id="form-date-range">
         <el-date-picker
           v-model="itemBuffer.dateRange"
           type="daterange"
@@ -53,7 +54,7 @@
         </el-row>
       </el-form-item>
 
-      <el-form-item label="监控频率" prop="frequency">
+      <el-form-item label="监控频率" prop="frequency" id="form-frequency">
         <el-input-number
           v-model="itemBuffer.frequency"
           :min="60"
@@ -61,51 +62,53 @@
         ></el-input-number>
       </el-form-item>
 
-      <el-form-item
-        v-for="(course, index) in itemBuffer.courseTime"
-        label="上课时间"
-        :key="course.key"
-        :prop="`courseTime[${index}]`"
-        :rules="{
-          required: true,
-          message: '域名不能为空',
-          trigger: 'blur',
-        }"
-      >
-        <el-row>
-          <el-col :span="4">
-            <el-select
-              v-model.number="itemBuffer.courseTime[index].day"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in days"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+      <div id="form-course-time-container">
+        <el-form-item
+          v-for="(course, index) in itemBuffer.courseTime"
+          label="上课时间"
+          :key="course.key"
+          :prop="`courseTime[${index}]`"
+          :rules="{
+            required: true,
+            message: '域名不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <el-row>
+            <el-col :span="4">
+              <el-select
+                v-model.number="itemBuffer.courseTime[index].day"
+                placeholder="请选择"
               >
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col :span="16">
-            <el-time-picker
-              is-range
-              v-model="itemBuffer.courseTime[index].timeRange"
-              range-separator="至"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
-              placeholder="选择课程时间"
-            >
-            </el-time-picker>
-          </el-col>
+                <el-option
+                  v-for="item in days"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-col :span="16" class="form-course-time-range">
+              <el-time-picker
+                is-range
+                v-model="itemBuffer.courseTime[index].timeRange"
+                range-separator="至"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+                placeholder="选择课程时间"
+              >
+              </el-time-picker>
+            </el-col>
 
-          <el-col :span="4">
-            <el-button @click.prevent="removeCourseTime(index)"
-              >删除</el-button
-            ></el-col
-          >
-        </el-row>
-      </el-form-item>
+            <el-col :span="4">
+              <el-button @click.prevent="removeCourseTime(index)"
+                >删除</el-button
+              ></el-col
+            >
+          </el-row>
+        </el-form-item>
+      </div>
 
       <template
         v-if="
@@ -136,7 +139,7 @@
           <el-col>
             <el-row type="flex" justify="end">
               <el-button @click="resetItemEdit()">重置</el-button>
-              <el-button type="primary" @click="confirmItemEdit()">
+              <el-button type="primary" @click="confirmItemEdit()" id="form-confirm-button">
                 {{ action === "create" ? "创建" : "修改" }}
               </el-button>
             </el-row>
@@ -169,7 +172,7 @@ export default class TaskForm extends Vue {
     抢答: { value: 2, disabled: true },
   };
 
-  activeSignTypes = ["普通", "手势", "二维码", "定位", "图片"];
+  activeSignTypes = ["普通", "手势", "定位", "图片"];
 
   dynamicCourseTimes: ICourseTime[] = [];
 

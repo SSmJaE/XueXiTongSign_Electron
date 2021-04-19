@@ -1,6 +1,6 @@
 {
   "name": "xue-xi-tong-sign-electron",
-  "productName": "xue-xi-tong-sign-electron",
+  "productName": "签到小工具",
   "version": "1.0.0",
   "description": "A XueXiTong Sign Application, powered by Electron",
   "main": ".webpack/main/index",
@@ -76,6 +76,7 @@
     "@electron-forge/plugin-webpack": "6.0.0-beta.54",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "@types/electron-devtools-installer": "^2.2.0",
+    "@types/intro.js": "^3.0.1",
     "@types/lodash": "^4.14.168",
     "@types/lowdb": "^1.0.9",
     "@types/query-string": "^6.3.0",
@@ -106,6 +107,7 @@
     "dayjs": "^1.10.4",
     "electron-squirrel-startup": "^1.0.0",
     "element-ui": "^2.15.1",
+    "intro.js": "^3.4.0",
     "lodash": "^4.17.21",
     "lowdb": "^1.0.0",
     "query-string": "^7.0.0",

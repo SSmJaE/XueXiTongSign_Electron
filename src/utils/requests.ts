@@ -1,7 +1,6 @@
 import { remote } from "electron";
 import * as moduleRequests from "@main/requests";
 
-import logger from "./logger";
 import userModule from "@store/user";
 import { formatDateTime } from "./common";
 
@@ -10,7 +9,7 @@ const remoteRequests: typeof moduleRequests = remote.getGlobal("remoteRequests")
 const PARSER = new DOMParser();
 
 export async function getCourses() {
-    const response = await remoteRequests.getCourses();
+    const response = await remoteRequests.getCourses(userModule.user.cookie);
     console.log(response);
 
     const htmlDom = PARSER.parseFromString(response, "text/html");
@@ -44,6 +43,7 @@ export async function getActivities(course: ICourse) {
     const activities: Activity[] = [];
 
     const response = await remoteRequests.getActivities({
+        cookie: userModule.user.cookie,
         uid: userModule.user.uid,
         courseId: course.courseId,
         classId: course.classId,
@@ -54,8 +54,7 @@ export async function getActivities(course: ICourse) {
     const errorMsg = response.errorMsg;
 
     if (errorMsg) {
-        logger.error(`${course.courseName} ${errorMsg}`);
-        return;
+        throw new Error(`${course.courseName} ${errorMsg}`);
     }
 
     const activeList = response["activeList"];
@@ -74,6 +73,7 @@ export async function getActivities(course: ICourse) {
         // if (this.hasSigned.includes(activity["id"])) continue;
 
         // and activity['status'] == 1
+        // status为1，则为未签到
         if (activity["activeType"] == 2) {
             const startTime = formatDateTime(activity.startTime);
 

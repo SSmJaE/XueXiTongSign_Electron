@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-select v-model="logLevel" placeholder="日志等级">
+    <el-select v-model="logLevel" placeholder="日志等级" id="log-level">
       <el-option
         v-for="level in logLevels"
         :key="level"
@@ -10,8 +10,19 @@
       </el-option>
     </el-select>
 
-    <span>自动下滑</span>
-    <el-switch v-model="autoSlide"> </el-switch>
+    <span id="log-auto-slide">
+      <span>自动下滑</span>
+      <el-switch v-model="autoSlide"> </el-switch>
+    </span>
+
+    <span id="log-active-courses">
+      <span>当前活跃课程</span>
+      <span v-for="courseName in activeTasks" :key="courseName">{{
+        courseName
+      }}</span>
+    </span>
+
+    <span v-if="!activeTasks.length"> 无 </span>
 
     <div
       id="log-container"
@@ -21,9 +32,16 @@
         overflowY: 'auto',
       }"
     >
-      <div v-for="(log, index) in displayedLogs" :key="index">
+      <div class="log" v-for="(log, index) in displayedLogs" :key="index">
         <span>{{ formatDateTime(log.time) }}</span>
-        <el-tag>{{ log.level }}</el-tag>
+        <span class="tag-container">
+          <el-tag
+            size="medium"
+            effect="dark"
+            :type="log.level === 'error' ? 'danger' : log.level"
+            >{{ log.level }}</el-tag
+          >
+        </span>
         <span>{{ log.message }}</span>
       </div>
     </div>
@@ -35,6 +53,7 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 
 import logger, { LOG_LEVELS } from "@src/utils/logger";
 import { formatDateTime } from "@src/utils/common";
+import taskModule from "@store/task";
 
 @Component({})
 export default class Log extends Vue {
@@ -67,6 +86,10 @@ export default class Log extends Vue {
     }
   }
 
+  get activeTasks() {
+    return taskModule.activeTasks;
+  }
+
   formatDateTime = formatDateTime;
 
   mounted() {
@@ -75,3 +98,14 @@ export default class Log extends Vue {
 }
 </script>
 
+<style lang="postcss">
+.log {
+  margin-bottom: 5px;
+
+  .tag-container {
+    width: 80px;
+    display: inline-flex;
+    justify-content: center;
+  }
+}
+</style>

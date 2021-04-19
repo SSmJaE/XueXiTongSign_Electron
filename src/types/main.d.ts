@@ -65,6 +65,7 @@ interface IUser {
     password: string;
     cookie: string;
     lastUpdateTime: Date;
+    hasTakenGuide: boolean;
 }
 
 interface IParsedDetail {

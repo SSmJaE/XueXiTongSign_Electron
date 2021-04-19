@@ -91,6 +91,13 @@ export class TaskModule extends VuexModule {
         ).write();
     }
 
+    activeTasks: string[] = [];
+
+    @Mutation
+    refreshActiveTasks(activeTasks: string[]) {
+        this.activeTasks = activeTasks;
+    }
+
     parsedUTC: IParsedUTC = {};
 
     /**
@@ -285,6 +292,11 @@ export class TaskModule extends VuexModule {
     @Mutation
     cancelItemEdit() {
         this.ItemEditDialogVisibility = false;
+    }
+
+    @Mutation
+    fakeTask(task: ITask) {
+        this.tasks = [task];
     }
 }
 

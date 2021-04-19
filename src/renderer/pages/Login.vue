@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div id="login-container">
     <el-input v-model="account" placeholder="请输入账号"></el-input>
     <el-input v-model="password" placeholder="请输入密码"></el-input>
-    <el-button type="primary" @click="login()">登录</el-button>
+    <el-button id="login-button" type="primary" @click="login()"
+      >登录</el-button
+    >
     <el-input
       type="textarea"
       :rows="8"
@@ -10,8 +12,15 @@
       v-model="cookie"
     >
     </el-input>
-    <el-button type="primary" @click="checkCookie()">检测cookie</el-button>
-    <el-button type="primary" @click="updateCookie()" :disabled="!isValid"
+
+    <el-button id="cookie-check-button" type="primary" @click="checkCookie()"
+      >检测cookie</el-button
+    >
+    <el-button
+      id="cookie-update-button"
+      type="primary"
+      @click="updateCookie()"
+      :disabled="!isValid"
       >替换cookie</el-button
     >
   </div>
@@ -77,6 +86,12 @@ export default class Login extends mixins(WithLogNotify) {
     userModule.updateUser({
       uid: parseInt(uid),
       cookie: this.cookie,
+    });
+
+    this.withLogNotify({
+      level: "success",
+      title: "操作成功",
+      message: "cookie替换成功",
     });
   }
 

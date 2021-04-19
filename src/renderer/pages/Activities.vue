@@ -1,33 +1,54 @@
 <template>
-  <div>
-    <el-button type="primary" @click="getCourses()">获取所有课程</el-button>
+  <div id="activities-container">
+    <el-button id="get-course-button" type="primary" @click="getCourses()"
+      >获取所有课程</el-button
+    >
     <el-row>
       <el-col :span="12">
-        <el-card v-for="(course, index) in courses" :key="index">
-          <div>课程 {{ course.courseName }}</div>
-          <div>courseId {{ course.courseId }}</div>
-          <div>classId {{ course.classId }}</div>
-          <el-button type="primary" @click="enableItemEdit('create', course)"
-            >添加至队列</el-button
-          >
-          <el-button type="primary" @click="getActivities(course)"
-            >查看活动</el-button
-          >
-        </el-card>
+        <div class="course-container">
+          <el-card v-for="(course, index) in courses" :key="index">
+            <div>课程 {{ course.courseName }}</div>
+            <div>courseId {{ course.courseId }}</div>
+            <div>classId {{ course.classId }}</div>
+            <el-button
+              type="primary"
+              @click="enableItemEdit('create', course)"
+              class="course-create-button"
+              >添加至队列</el-button
+            >
+            <el-button
+              type="primary"
+              @click="getActivities(course)"
+              class="course-check-button"
+              >查看活动</el-button
+            >
+          </el-card>
+        </div>
       </el-col>
 
       <el-col :span="12">
-        <el-card v-for="(activity, index) in activities" :key="index">
-          <div>
-            {{ activity.nameOne }}
-          </div>
-          <div>{{ activity.activeType }}</div>
-          <div>{{ formatDateTime(activity.startTime) }}</div>
+        <div id="activity-container">
+          <el-card v-for="(activity, index) in activities" :key="index">
+            <div>
+              {{ activity.nameOne }}
+            </div>
+            <div>{{ activity.activeType }}</div>
+            <div>{{ formatDateTime(activity.startTime) }}</div>
 
-          <!-- todo 判断是否已经签到过，签到过不允许再次签到 -->
-          <!-- todo 只允许签到签到活动 -->
-          <el-button type="primary" @click="sign(activity)">签到</el-button>
-        </el-card>
+            <!-- todo 判断是否已经签到过，签到过不允许再次签到 -->
+            <!-- todo 只允许签到签到活动 -->
+            <el-button
+              type="primary"
+              @click="sign(activity)"
+              class="course-sign-button"
+              >签到</el-button
+            >
+          </el-card>
+        </div>
+
+        <template v-if="hasGetActivities && !activities.length">
+          该课程活动获取成功，并无对应活动
+        </template>
       </el-col>
     </el-row>
   </div>
@@ -38,6 +59,7 @@
 import { Component } from "vue-property-decorator";
 import { mixins } from "vue-class-component";
 
+import eventBus from "@renderer/EventBus";
 import { WithLogNotify } from "../mixins/common";
 
 import { formatDateTime } from "@src/utils/common";
@@ -52,6 +74,8 @@ export default class Activities extends mixins(WithLogNotify) {
 
   formatDateTime = formatDateTime;
 
+  hasGetActivities = false;
+
   async sign(activity: Activity) {
     const response = await sign(activity);
 
@@ -63,11 +87,72 @@ export default class Activities extends mixins(WithLogNotify) {
   }
 
   async getActivities(course: ICourse) {
-    this.activities = await getActivities(course);
+    try {
+      if (!this.hasGetActivities) {
+        this.hasGetActivities = true;
+      }
+
+      this.activities = await getActivities(course);
+
+      this.withLogNotify({
+        level: "success",
+        title: "成功",
+        message: "活动获取成功",
+      });
+    } catch (error) {
+      this.withLogNotify({
+        level: "error",
+        title: "活动获取失败",
+        message: error,
+      });
+    }
   }
 
   enableItemEdit(action: "create", item: ICourse) {
     taskModule.enableItemEdit({ action, item });
+  }
+
+  created() {
+    eventBus.$on("fake-course", () => {
+      this.courses = [
+        {
+          courseName: "一门课程",
+          courseId: 123,
+          classId: 123,
+        },
+      ];
+    });
+
+    eventBus.$on("fake-activities", () => {
+      this.activities = [
+        {
+          nameOne: "签到任务1",
+          activeType: 2,
+          startTime: new Date(),
+        },
+        {
+          nameOne: "签到任务2",
+          activeType: 2,
+          startTime: new Date(),
+        },
+        {
+          nameOne: "非签到任务",
+          activeType: 2,
+          startTime: new Date(),
+        },
+      ] as any;
+    });
+
+    eventBus.$on("empty-activities", () => {
+      this.activities = [];
+      this.hasGetActivities = true;
+    });
+
+    eventBus.$on("back-to-normal", () => {
+      this.courses = [];
+      this.activities = [];
+      this.hasGetActivities = false;
+    });
   }
 }
 </script>

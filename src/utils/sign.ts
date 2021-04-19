@@ -37,6 +37,7 @@ export function figureSignType(Activity: Activity): SignTypes {
 
 export async function sign(activity: Activity) {
     const response = await remoteRequests.sign({
+        cookie: userModule.user.cookie,
         uid: userModule.user.uid,
         activeId: activity.id,
     });

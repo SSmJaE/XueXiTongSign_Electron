@@ -8,6 +8,7 @@ interface ILoginReturn {
 interface IGetCourses {}
 
 interface IGetActivities {
+    cookie: string;
     courseId: string | number;
     classId: string | number;
     uid: string | number;
@@ -23,6 +24,7 @@ interface IGetActivitiesReturn {
 }
 
 interface ISign {
+    cookie: string;
     uid: string | number;
     activeId: string | number;
 }

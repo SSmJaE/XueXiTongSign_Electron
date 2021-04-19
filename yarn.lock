@@ -1298,6 +1298,11 @@
   resolved "https://registry.npm.taobao.org/@types/http-cache-semantics/download/@types/http-cache-semantics-4.0.0.tgz#9140779736aa2655635ee756e2467d787cfe8a2a"
   integrity sha1-kUB3lzaqJlVjXudW4kZ9eHz+iio=
 
+"@types/intro.js@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.npm.taobao.org/@types/intro.js/download/@types/intro.js-3.0.1.tgz#2a5272d6ceb715676f496fd0060eedc70d98c6fe"
+  integrity sha1-KlJy1s63FWdvSW/QBg7txw2Yxv4=
+
 "@types/json-schema@^7.0.3", "@types/json-schema@^7.0.4", "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.6":
   version "7.0.7"
   resolved "https://registry.npm.taobao.org/@types/json-schema/download/@types/json-schema-7.0.7.tgz?cache=0&sync_timestamp=1613378919536&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fjson-schema%2Fdownload%2F%40types%2Fjson-schema-7.0.7.tgz#98a993516c859eb0d5c4c8f098317a9ea68db9ad"
@@ -4884,6 +4889,11 @@ inquirer@^7.3.3:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
     through "^2.3.6"
+
+intro.js@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.npm.taobao.org/intro.js/download/intro.js-3.4.0.tgz#615475f93988369e2ef25da2c397c82c150df4e0"
+  integrity sha1-YVR1+TmINp4u8l2iw5fILBUN9OA=
 
 ipaddr.js@1.9.1:
   version "1.9.1"
