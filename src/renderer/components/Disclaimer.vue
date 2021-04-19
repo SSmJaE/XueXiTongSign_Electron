@@ -8,7 +8,9 @@
     :close-on-press-escape="false"
     center
   >
-    <div>小工具唯一发布地址 github</div>
+    <div>
+      小工具唯一发布地址 https://github.com/SSmJaE/XueXiTonsSign_Electron
+    </div>
     <div>建议严格设置监控时间段，并且设置较大的检测频率</div>
     <div>防止给服务器带来压力，己所不欲，勿施于人</div>
     <div>感谢李恒道提供的支持</div>
