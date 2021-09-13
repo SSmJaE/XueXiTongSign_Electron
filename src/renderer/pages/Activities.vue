@@ -32,12 +32,13 @@
             <div>
               {{ activity.nameOne }}
             </div>
-            <div>{{ activity.activeType }}</div>
+            <div>{{ activity.groupId === 1 ? '进行中' : '已结束' }}</div>
             <div>{{ formatDateTime(activity.startTime) }}</div>
 
             <!-- todo 判断是否已经签到过，签到过不允许再次签到 -->
             <!-- todo 只允许签到签到活动 -->
             <el-button
+              v-if="activity.groupId === 1"
               type="primary"
               @click="sign(activity)"
               class="course-sign-button"
