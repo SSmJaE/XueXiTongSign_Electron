@@ -18,6 +18,11 @@ db.defaults<IDataBase>({
     tasks: [],
     parsedUTC: {},
     signedActivities: [],
+    onebot: {
+        enabled: false,
+        address: 'http://127.0.0.1/send_group_msg',
+        groupId: 0
+    }
 }).write();
 
 // Set a user using Lodash shorthand syntax

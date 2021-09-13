@@ -2,32 +2,32 @@
   <div>
     <el-tabs type="border-card">
       <el-tab-pane label="登录">
-        <Login />
+        <Login/>
       </el-tab-pane>
 
       <el-tab-pane label="活动">
-        <Activities />
+        <Activities/>
       </el-tab-pane>
 
       <el-tab-pane label="任务">
-        <Table />
+        <Table/>
       </el-tab-pane>
 
       <el-tab-pane label="日志">
-        <Log />
+        <Log/>
       </el-tab-pane>
     </el-tabs>
 
-    <TaskForm />
-    <Disclaimer />
+    <TaskForm/>
+    <Disclaimer/>
   </div>
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
-import { mixins } from "vue-class-component";
+import {Component} from "vue-property-decorator";
+import {mixins} from "vue-class-component";
 
-import { WithLogNotify } from "./mixins/common";
+import {WithLogNotify} from "./mixins/common";
 
 import Activities from "./pages/Activities.vue";
 import Log from "./pages/Log.vue";
@@ -36,13 +36,14 @@ import Table from "./pages/Table.vue";
 import TaskForm from "./components/TaskForm.vue";
 import Disclaimer from "./components/Disclaimer.vue";
 
-import { ObjectEntries, sleep } from "@src/utils/common";
+import {ObjectEntries, sleep} from "@src/utils/common";
 import db from "@src/utils/database";
 import logger from "@src/utils/logger";
 import watcher from "@src/utils/watcher";
-import { sign } from "@src/utils/sign";
+import {sign} from "@src/utils/sign";
 import taskModule from "@src/renderer/store/task";
-import { getActivities } from "@src/utils/requests";
+import {getActivities} from "@src/utils/requests";
+import axios from 'axios'
 
 const tasksCollection = db.get("tasks");
 
@@ -130,7 +131,7 @@ export default class App extends mixins(WithLogNotify) {
         lastHeartBeatTime = current;
       }
 
-      for (const [taskId, { UTC, lastCheckTime, frequency }] of ObjectEntries(
+      for (const [taskId, {UTC, lastCheckTime, frequency}] of ObjectEntries(
         taskModule.parsedUTC
       )) {
         if (UTC) {
@@ -167,7 +168,7 @@ export default class App extends mixins(WithLogNotify) {
   /** 检测是否有新的活动，有的话emit给watcher，触发事件响应 */
   async checkActivity(taskId: string) {
     // 根据taskId获取课程信息
-    const task = tasksCollection.find({ id: taskId }).value();
+    const task = tasksCollection.find({id: taskId}).value();
 
     const course: ICourse = {
       courseName: task.courseName,
@@ -200,6 +201,15 @@ export default class App extends mixins(WithLogNotify) {
         title: "有新签到",
         message: `检测到${task.courseName}的新签到活动`,
       });
+      //汇报给 onebot
+      const onebotConf: IOnebotConf = db.get('onebot').value()
+      if (onebotConf.enabled)
+        axios.post(onebotConf.address, {
+          group_id: onebotConf.groupId,
+          message: `检测到${task.courseName}的新签到活动`
+        }, {
+          auth: onebotConf.auth
+        })
     } else {
       logger.info(`${task.courseName}无新签到`);
     }
@@ -218,13 +228,13 @@ export default class App extends mixins(WithLogNotify) {
 
     const current = Math.floor(Date.now() / 1000);
 
-    for (const [taskId, { UTC }] of ObjectEntries(taskModule.parsedUTC)) {
+    for (const [taskId, {UTC}] of ObjectEntries(taskModule.parsedUTC)) {
       if (UTC) {
         for (const [start, end] of UTC) {
           if (start <= current && current <= end) {
             const currentCourseName = db
               .get("tasks")
-              .find({ id: taskId })
+              .find({id: taskId})
               .get("courseName")
               .value();
 
