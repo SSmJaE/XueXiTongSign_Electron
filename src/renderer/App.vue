@@ -189,7 +189,9 @@ export default class App extends mixins(WithLogNotify) {
     const signedActivities = taskModule.signedActivities;
 
     const newActivities = activities.filter(
-      (activity) => !signedActivities.includes(activity.id)
+      (activity) => !signedActivities.includes(activity.id) &&
+        activity.activeType === 2 && // 筛选签到任务
+        activity.groupId === 1 // 筛选「进行中」的任务
     );
 
     if (newActivities.length) {
