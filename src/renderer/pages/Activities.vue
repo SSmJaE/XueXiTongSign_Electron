@@ -130,6 +130,7 @@ export default class Activities extends mixins(WithLogNotify) {
           nameOne: "签到任务1",
           activeType: 2,
           startTime: new Date(),
+          groupId: 1
         },
         {
           nameOne: "签到任务2",

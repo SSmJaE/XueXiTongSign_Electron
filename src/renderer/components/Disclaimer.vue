@@ -64,7 +64,7 @@ export default class TaskForm extends Vue {
           disableInteraction: true,
           nextLabel: "继续",
           prevLabel: "返回",
-          exitOnOverlayClick: false,
+          exitOnOverlayClick: true,
           steps: [
             {
               title: "你好",
