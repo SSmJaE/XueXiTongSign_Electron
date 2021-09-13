@@ -10,7 +10,7 @@ const cookieJar = new tough.CookieJar();
 function generateUserAgent(platform: "desktop" | "mobile") {}
 
 if (process.env.NODE_ENV === "development") {
-    axios.defaults.proxy = { host: "127.0.0.1", port: 8866 };
+    // axios.defaults.proxy = { host: "127.0.0.1", port: 8866 };
 }
 
 const PC_AGENT =

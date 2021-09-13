@@ -66,9 +66,6 @@ export async function getActivities(course: ICourse) {
         //   continue;
         // }
 
-        console.log(activity);
-        activities.push(activity);
-
         // todo 可以把所有已签到成功的数据写入数据库，签到之前验证一下
         // if (this.hasSigned.includes(activity["id"])) continue;
 
