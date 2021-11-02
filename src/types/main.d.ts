@@ -79,11 +79,22 @@ interface IParsedUTC {
     [taskId: string]: IParsedDetail;
 }
 
+interface IOnebotConf{
+    enabled: boolean,
+    address: string,
+    groupId: number,
+    auth?:{
+        username: string,
+        password: string
+    }
+}
+
 interface IDataBase {
     user: IUser;
     tasks: ITask[];
     parsedUTC: IParsedUTC;
     signedActivities: number[];
+    onebot: IOnebotConf
 }
 
 type LoggerLevel = "debug" | "info" | "error" | "warning" | "success";
