@@ -1,37 +1,32 @@
 <template>
-  <div>
-    <el-select v-model="logLevel" placeholder="日志等级" id="log-level">
-      <el-option
-        v-for="level in logLevels"
-        :key="level"
-        :label="level"
-        :value="level"
-      >
-      </el-option>
-    </el-select>
+  <div class="log-panel">
+    <div class="action-container">
+      <span id="log-level">
+        <span class="action-label">日志筛选</span>
+        <el-select v-model="logLevel" placeholder="日志等级">
+          <el-option
+            v-for="level in logLevels"
+            :key="level"
+            :label="level"
+            :value="level"
+          >
+          </el-option>
+        </el-select>
+      </span>
 
-    <span id="log-auto-slide">
-      <span>自动下滑</span>
-      <el-switch v-model="autoSlide"> </el-switch>
-    </span>
+      <span id="log-auto-slide">
+        <span class="action-label">自动下滑</span>
+        <el-switch v-model="autoSlide"> </el-switch>
+      </span>
 
-    <span id="log-active-courses">
-      <span>当前活跃课程</span>
-      <span v-for="courseName in activeTasks" :key="courseName">{{
-        courseName
-      }}</span>
-    </span>
+      <span id="log-active-courses">
+        <span class="action-label">当前活跃课程</span>
+        <span v-if="!activeTasks.length"> 无 </span>
+        <span v-else>{{ activeTasks.join("， ") }}</span>
+      </span>
+    </div>
 
-    <span v-if="!activeTasks.length"> 无 </span>
-
-    <div
-      id="log-container"
-      :style="{
-        height: '550px',
-        width: '100%',
-        overflowY: 'auto',
-      }"
-    >
+    <div id="log-container">
       <div class="log" v-for="(log, index) in displayedLogs" :key="index">
         <span>{{ formatDateTime(log.time) }}</span>
         <span class="tag-container">
@@ -98,7 +93,49 @@ export default class Log extends Vue {
 }
 </script>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
+.log-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+#log-level {
+  padding-right: 16px;
+  border-right: 1px solid #ebeef5;
+
+  .el-select {
+    width: 100px;
+  }
+}
+
+#log-auto-slide {
+  padding-left: 8px;
+  padding-right: 16px;
+  border-right: 1px solid #ebeef5;
+}
+
+#log-active-courses {
+  padding-left: 8px;
+}
+
+.action-label {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.action-container {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+#log-container {
+  height: 550px;
+  margin-top: 16px;
+  /* flex-grow: 1; */
+  width: 100%;
+  overflow-y: auto;
+}
+
 .log {
   margin-bottom: 5px;
 

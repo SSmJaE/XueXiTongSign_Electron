@@ -1,38 +1,64 @@
 <template>
   <div id="activities-container">
-    <el-button id="get-course-button" type="primary" @click="getCourses()"
-      >获取所有课程</el-button
-    >
-    <el-row>
+    <div id="get-course-button">
+      <el-button type="success" @click="getCourses()" icon="el-icon-check"
+        >获取所有课程</el-button
+      >
+    </div>
+    <el-row :gutter="16" style="margin-top: 16px">
       <el-col :span="12">
         <div class="course-container">
-          <el-card v-for="(course, index) in courses" :key="index">
-            <div>课程 {{ course.courseName }}</div>
-            <div>courseId {{ course.courseId }}</div>
-            <div>classId {{ course.classId }}</div>
-            <el-button
-              type="primary"
-              @click="enableItemEdit('create', course)"
-              class="course-create-button"
-              >添加至队列</el-button
-            >
-            <el-button
-              type="primary"
-              @click="getActivities(course)"
-              class="course-check-button"
-              >查看活动</el-button
-            >
+          <el-card
+            v-for="(course, index) in courses"
+            :key="index"
+            shadow="hover"
+          >
+            <div slot="header">
+              <div class="course-header">{{ course.courseName }}</div>
+            </div>
+
+            <div class="course-info">
+              <div>
+                <el-tag type="info">课程ID</el-tag>
+                {{ course.courseId }}
+              </div>
+              <div style="margin-top: 8px">
+                <el-tag type="info">班级ID</el-tag>
+                {{ course.classId }}
+              </div>
+            </div>
+
+            <div class="course-action">
+              <el-button
+                type="primary"
+                plain
+                @click="enableItemEdit('create', course)"
+                class="course-create-button"
+                >添加至队列</el-button
+              >
+              <el-button
+                type="success"
+                plain
+                @click="getActivities(course)"
+                class="course-check-button"
+                >查看活动</el-button
+              >
+            </div>
           </el-card>
         </div>
       </el-col>
 
       <el-col :span="12">
         <div id="activity-container">
-          <el-card v-for="(activity, index) in activities" :key="index">
+          <el-card
+            v-for="(activity, index) in activities"
+            :key="index"
+            shadow="hover"
+          >
             <div>
               {{ activity.nameOne }}
             </div>
-            <div>{{ activity.groupId === 1 ? '进行中' : '已结束' }}</div>
+            <div>{{ activity.groupId === 1 ? "进行中" : "已结束" }}</div>
             <div>{{ formatDateTime(activity.startTime) }}</div>
 
             <!-- todo 判断是否已经签到过，签到过不允许再次签到 -->
@@ -130,7 +156,7 @@ export default class Activities extends mixins(WithLogNotify) {
           nameOne: "签到任务1",
           activeType: 2,
           startTime: new Date(),
-          groupId: 1
+          groupId: 1,
         },
         {
           nameOne: "签到任务2",
@@ -158,3 +184,34 @@ export default class Activities extends mixins(WithLogNotify) {
   }
 }
 </script>
+
+<style lang="postcss" scoped>
+#get-course-button {
+  display: flex;
+  justify-content: center;
+}
+
+.el-card {
+  margin-bottom: 8px;
+  border-radius: 10px;
+}
+
+.course-header {
+  text-align: center;
+  font-size: 24px;
+}
+
+.course-info {
+  font-size: 18px;
+  /* display: flex;
+  flex-direction: column;
+  align: center; */
+}
+
+.course-action {
+  /* border-top: 1px solid #ebeef5; */
+  padding-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+</style>

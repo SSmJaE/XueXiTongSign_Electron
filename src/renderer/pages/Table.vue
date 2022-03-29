@@ -1,27 +1,27 @@
 <template>
   <el-table :data="tasks" style="width: 100%" row-key="id" id="task-table">
-    <el-table-column label="课程名称">
+    <el-table-column label="课程名称" width="400">
       <template slot-scope="scope">
         {{ scope.row.courseName }}
       </template>
     </el-table-column>
 
-    <el-table-column label="日期范围">
+    <el-table-column label="日期范围" >
       <template slot-scope="scope">
         <i class="el-icon-time"></i>
         <span style="margin-left: 10px">{{
-          scope.row.dateRange.map((date) => formatDate(date)).join("至")
+          scope.row.dateRange.map((date) => formatDate(date)).join(" 至 ")
         }}</span>
       </template>
     </el-table-column>
 
-    <el-table-column label="上课时间" width="180">
+    <el-table-column label="上课时间" width="250">
       <template slot-scope="scope">
         <el-popover trigger="hover" placement="top">
           <div v-for="courseTime in scope.row.courseTime" :key="courseTime.key">
             周{{ courseTime.day }}
             {{
-              courseTime.timeRange.map((date) => formatTime(date)).join("至")
+              courseTime.timeRange.map((date) => formatTime(date)).join(" 至 ")
             }}
           </div>
           <div slot="reference" class="name-wrapper">
@@ -35,7 +35,7 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="操作">
+    <el-table-column label="操作" width="160">
       <template slot-scope="scope">
         <div class="task-actions">
           <el-button

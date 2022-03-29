@@ -1,28 +1,54 @@
 <template>
   <div id="login-container">
-    <el-input v-model="account" placeholder="请输入账号"></el-input>
-    <el-input v-model="password" placeholder="请输入密码"></el-input>
-    <el-button id="login-button" type="primary" @click="login()"
-      >登录</el-button
-    >
-    <el-input
-      type="textarea"
-      :rows="8"
-      placeholder="请输入Cookie"
-      v-model="cookie"
-    >
-    </el-input>
+    <el-row :gutter="16">
+      <el-col :span="8">
+        <el-input
+          v-model="account"
+          placeholder="请输入账号"
+          style="margin-bottom: 16px"
+        ></el-input>
+        <el-input
+          v-model="password"
+          placeholder="请输入密码"
+          style="margin-bottom: 16px"
+        ></el-input>
 
-    <el-button id="cookie-check-button" type="primary" @click="checkCookie()"
-      >检测cookie</el-button
-    >
-    <el-button
-      id="cookie-update-button"
-      type="primary"
-      @click="updateCookie()"
-      :disabled="!isValid"
-      >替换cookie</el-button
-    >
+        <div class="login-button-container">
+          <el-button id="login-button" type="primary" @click="login()"
+            >登录</el-button
+          >
+        </div>
+      </el-col>
+
+      <el-col :span="16">
+        <el-input
+          type="textarea"
+          :rows="8"
+          placeholder="请输入Cookie"
+          v-model="cookie"
+          style="margin-bottom: 16px"
+        >
+        </el-input>
+
+        <div class="cookie-action-container">
+          <el-button
+            id="cookie-check-button"
+            type="primary"
+            @click="checkCookie()"
+            >检测cookie</el-button
+          >
+          <el-button
+            id="cookie-update-button"
+            type="primary"
+            @click="updateCookie()"
+            :disabled="!isValid"
+            >替换cookie</el-button
+          >
+        </div>
+      </el-col>
+    </el-row>
+
+    监控方式 间隔查询，接受推送
   </div>
 </template>
 
@@ -36,9 +62,9 @@ import userModule from "@store/user";
 
 import * as moduleRequests from "@main/requests";
 import { remote } from "electron";
-const remoteRequests: typeof moduleRequests = remote.getGlobal(
-  "remoteRequests"
-);
+
+const remoteRequests: typeof moduleRequests =
+  remote.getGlobal("remoteRequests");
 
 @Component({})
 export default class Login extends mixins(WithLogNotify) {
@@ -142,5 +168,18 @@ export default class Login extends mixins(WithLogNotify) {
 }
 </script>
 
-<style>
+<style lang="postcss" scoped>
+.login-button-container {
+  display: flex;
+  justify-content: center;
+
+  #login-button {
+    width: 150px;
+  }
+}
+
+.cookie-action-container {
+  display: flex;
+  justify-content: center;
+}
 </style>
