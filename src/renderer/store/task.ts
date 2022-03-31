@@ -35,6 +35,7 @@ const defaultTask: ITask = {
 };
 
 @Module({
+    namespaced: true,
     name: "task",
     store,
     dynamic: true,

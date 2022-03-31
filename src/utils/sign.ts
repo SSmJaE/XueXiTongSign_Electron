@@ -7,10 +7,10 @@ import userModule from "@store/user";
 const remoteRequests: typeof moduleRequests = remote.getGlobal("remoteRequests");
 
 /** 根据activity emit相应的事件 */
-export function figureSignType(Activity: Activity): SignTypes {
+export function figureSignType(Activity: Activity): SignType {
     // todo 判断签到类型，通过什么判断呢？
 
-    let taskType: SignTypes = undefined;
+    let taskType: SignType = undefined;
 
     switch (Activity.activeType) {
         case 1:
@@ -45,3 +45,9 @@ export async function sign(activity: Activity) {
     // 无法判断签到有无过期，只能得知是否签到过
     return response;
 }
+
+export async function signNormal() {}
+export async function signLocation() {}
+export async function signGesture() {}
+export async function signPicture() {}
+export async function signQrcode() {}

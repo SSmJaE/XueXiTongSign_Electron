@@ -1,6 +1,7 @@
 import axios from "axios";
-import queryString from "query-string";
 import axiosCookieJarSupport from "axios-cookiejar-support";
+import jsdom from "jsdom";
+import queryString from "query-string";
 import tough from "tough-cookie";
 
 axiosCookieJarSupport(axios);
@@ -15,6 +16,8 @@ if (process.env.NODE_ENV === "development") {
 
 const PC_AGENT =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36";
+const MOBILE_AGENT =
+    "Dalvik/2.1.0 (Linux; U; Android 10; MI 8 MIUI/V12.0.3.0.QEACNXM) com.chaoxing.mobile/ChaoXingStudy_3_4.7.4_android_phone_593_53 (@Kalimdor)_df14728a529c4e608a7b8f1112ca2825";
 
 axios.interceptors.response.use(
     function(response) {
@@ -116,6 +119,72 @@ export async function getActivities({
     });
 }
 
+export async function figureSignType(cookie: string, activeId: number | string) {
+    const response: IActivityDetail = await axios.get(
+        "https://mobilelearn.chaoxing.com/v2/apis/active/getPPTActiveInfo",
+        {
+            headers: {
+                Cookie: cookie,
+                "User-Agent": MOBILE_AGENT,
+            },
+            params: {
+                activeId,
+            },
+        },
+    );
+
+    if (!response) {
+        const err = "查询签到详情时遇到问题，activeId: " + activeId;
+        throw new Error(err);
+    }
+
+    let taskType: SignType = undefined;
+    let location = null;
+
+    const {
+        otherId,
+        ifphoto,
+        ifopenAddress,
+        locationText,
+        locationLatitude,
+        locationLongitude,
+        locationRange,
+    } = response;
+
+    switch (otherId) {
+        case 2:
+            taskType = "qrcode";
+            break;
+
+        case 3:
+            taskType = "gesture";
+            break;
+
+        case 4:
+            taskType = "location";
+
+            // 是指定位置的签到
+            if (ifopenAddress) {
+                location = {
+                    address: locationText,
+                    lat: locationLatitude,
+                    lon: locationLongitude,
+                    range: locationRange,
+                };
+            }
+            break;
+
+        default:
+            taskType = ifphoto ? "picture" : "normal";
+            break;
+    }
+
+    return {
+        taskType,
+        location,
+    };
+}
+
 export async function sign({ cookie, activeId, uid }: ISign): Promise<string> {
     return await axios.get("https://mobilelearn.chaoxing.com/pptSign/stuSignajax", {
         headers: {
@@ -132,4 +201,21 @@ export async function sign({ cookie, activeId, uid }: ISign): Promise<string> {
             fid: 0,
         },
     });
+}
+
+/** 获取连接学习通 easemob 即时通信的 token */
+export async function getImToken(cookie: string) {
+    const response: string = await axios.get("https://im.chaoxing.com/webim/me", {
+        headers: {
+            Cookie: cookie,
+            "User-Agent": PC_AGENT,
+        },
+        responseType: "text",
+    });
+
+    const PARSER = new DOMParser();
+    const htmlDom = PARSER.parseFromString(response, "text/html");
+    const token = htmlDom.querySelector("#myToken").textContent;
+
+    return token;
 }

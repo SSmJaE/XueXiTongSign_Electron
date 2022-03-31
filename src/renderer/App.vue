@@ -18,26 +18,29 @@
       </el-tab-pane>
 
       <el-tab-pane label="推送">
-        <!-- <Log /> -->
+        <Push />
       </el-tab-pane>
     </el-tabs>
 
     <TaskForm />
+    <OnebotForm />
     <Disclaimer />
   </div>
 </template>
 
 <script lang="ts">
+import { ipcRenderer } from "electron";
 import { Component } from "vue-property-decorator";
 import { mixins } from "vue-class-component";
-
 import { WithLogNotify } from "./mixins/common";
 
 import Activities from "./pages/Activities.vue";
 import Log from "./pages/Log.vue";
 import Login from "./pages/Login.vue";
 import Table from "./pages/Table.vue";
+import Push from "./pages/Push.vue";
 import TaskForm from "./components/TaskForm.vue";
+import OnebotForm from "./components/OnebotForm.vue";
 import Disclaimer from "./components/Disclaimer.vue";
 
 import { ObjectEntries, sleep } from "@src/utils/common";
@@ -45,11 +48,21 @@ import db from "@src/utils/database";
 import logger from "@src/utils/logger";
 import watcher from "@src/utils/watcher";
 import { sign } from "@src/utils/sign";
-import taskModule from "@src/renderer/store/task";
+import taskModule from "@store/task";
+import userModule from "@store/user";
+import pushModule from "@store/push";
 import { getActivities } from "@src/utils/requests";
 import axios from "axios";
 
 const tasksCollection = db.get("tasks");
+
+import { remote } from "electron";
+import * as moduleRequests from "@main/requests";
+// import * as moduleIm from "@main/im";
+
+const remoteRequests: typeof moduleRequests =
+  remote.getGlobal("remoteRequests");
+// const remoteIm: typeof moduleRequests = remote.getGlobal("remoteIm");
 
 @Component({
   components: {
@@ -57,7 +70,9 @@ const tasksCollection = db.get("tasks");
     Log,
     Login,
     Table,
+    Push,
     TaskForm,
+    OnebotForm,
     Disclaimer,
   },
 })
@@ -68,6 +83,7 @@ export default class App extends mixins(WithLogNotify) {
     taskModule.getTasks();
     // 每次启动时也应解析一次，删除过期的时间范围
     taskModule.parseUTC();
+    pushModule.getTasks();
 
     watcher.on("normal", async (task, activity) => {
       const status = await sign(activity);
@@ -106,6 +122,13 @@ export default class App extends mixins(WithLogNotify) {
 
       taskModule.saveSigned(activity.id);
     });
+
+    ipcRenderer.on("log", (...params) => {
+      const log = params[0] as any as ILog;
+      logger.log(log);
+    });
+
+    ipcRenderer.on("sign", (...params) => {});
 
     this.startHeartBeat();
 
@@ -214,7 +237,7 @@ export default class App extends mixins(WithLogNotify) {
         axios.post(
           onebotConf.address,
           {
-            group_id: onebotConf.groupId,
+            // group_id: onebotConf.groupId,
             message: `检测到${task.courseName}的新签到活动`,
           },
           {
@@ -229,6 +252,24 @@ export default class App extends mixins(WithLogNotify) {
       // 如果有新活动，判断活动类型，emit
       // const activityType = this.figureSignType(activity);
 
+      // const checkinInfo = await getCheckinDetail(cookie, aid);
+      // const sleepTime = getRandomIntInclusive(20, 35);
+      // if (checkinInfo.type !== "qr") {
+      //   info("收到", checkinInfo.type, "类型签到，延迟时间", sleepTime, "秒");
+      //   let messageToSend = `收到 ${courseName} 的签到\n类型：${checkinInfo.type}\naid:${aid}\n将在 ${sleepTime} 秒后自动签到`;
+      //   if (checkinInfo.location) {
+      //     messageToSend += `\n这是位置范围签到\n地址：${checkinInfo.location.address}\n精度：${checkinInfo.location.range}\n经纬度：${checkinInfo.location.lon},${checkinInfo.location.lat}`;
+      //   }
+      //   pushQMsg(messageToSend);
+      //   setTimeout(async () => {
+      //     pushQMsg(await handleSign(aid, courseId, checkinInfo));
+      //   }, sleepTime * 1000);
+      // } else {
+      //   info("收到二维码签到");
+      //   pushQMsg(
+      //     `收到 ${courseName} 的二维码签到，aid 为 ${aid}，需要提供一张二维码`
+      //   );
+      // }
       // watcher.emit(activityType, task, activity);
       watcher.emit("normal", task, activity);
     }
@@ -257,6 +298,14 @@ export default class App extends mixins(WithLogNotify) {
 
     taskModule.refreshActiveTasks(buffer);
     logger.debug(`当前活跃任务 ${buffer.length ? buffer.join("，") : "无"}`);
+  }
+
+  async connectIM() {
+    const uid = userModule.user.uid;
+    const cookie = userModule.user.cookie;
+    const token = await remoteRequests.getImToken(cookie);
+
+    ipcRenderer.send("connect", uid, cookie, token);
   }
 }
 </script>

@@ -1,12 +1,15 @@
 import "reflect-metadata";
-
-import Vue from "vue";
+import "element-ui/lib/theme-chalk/index.css";
 
 import ElementUI from "element-ui";
-import "element-ui/lib/theme-chalk/index.css";
+import Vue from "vue";
 
 import App from "./App.vue";
 import store from "./store";
+
+if (process.env.NODE_ENV === "development") {
+    import("@vue/devtools").then((devtools) => devtools.connect(/* host, port */));
+}
 
 Vue.use(ElementUI);
 

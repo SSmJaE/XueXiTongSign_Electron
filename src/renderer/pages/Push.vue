@@ -1,84 +1,68 @@
 <template>
   <div id="login-container">
+    <el-row style="margin-bottom: 16px">
+      <el-card shadow="hover">
+        <div class="section-title">消息推送等级</div>
+        <el-radio :label="3">只推送签到情况(成功/失败)</el-radio>
+
+        <el-row>
+          <el-col :span="6">
+            <el-radio :label="6">日志等级 success & error</el-radio>
+          </el-col>
+
+          <el-col :span="6">
+            <div>
+              <el-select v-model="logLevel" placeholder="日志等级">
+                <el-option
+                  v-for="level in logLevels"
+                  :key="level"
+                  :label="level"
+                  :value="level"
+                >
+                </el-option>
+              </el-select>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-row>
+
     <el-row :gutter="16">
-      <el-col :span="8">
-        <el-card shadow="hover" style="margin-bottom: 16px">
-          <el-input
-            v-model="account"
-            placeholder="请输入账号"
-            style="margin-bottom: 16px"
-          ></el-input>
-          <el-input
-            v-model="password"
-            placeholder="请输入密码"
-            style="margin-bottom: 16px"
-          ></el-input>
-
-          <div class="login-button-container">
-            <el-button id="login-button" type="primary" @click="login()"
-              >登录</el-button
-            >
-          </div>
-        </el-card>
-
+      <el-col :span="12">
         <el-card shadow="hover">
-          <div>
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="两种检测签到的方式，可以同时启用，并不冲突"
-              placement="top"
-            >
-              <div class="watch-method-title">监控方式</div>
+          <el-row class="section-title">
+            <!-- <div > -->
+            Onebot推送
+            <el-tooltip content="请自行确保Onebot服务正常运行">
+              <i class="el-icon-question"></i>
             </el-tooltip>
-            <div class="watch-method-choice">
-              <el-tooltip
-                class="item"
-                effect="dark"
-                content="当课程在设定的时间范围内，间隔一定时间查询是否有签到"
-                placement="bottom"
-              >
-                <el-checkbox v-model="checked1" label="间隔查询" border />
-              </el-tooltip>
-              <el-tooltip
-                class="item"
-                effect="dark"
-                content="通过超星接口，自动接收对应课程的签到任务，且当课程在设定的时间范围内，进行签到"
-                placement="bottom"
-              >
-                <el-checkbox v-model="checked2" label="接受推送" border />
-              </el-tooltip>
+            <!-- </div> -->
+          </el-row>
+
+          <el-row>
+            <el-col :span="6"> Onebot协议端地址 </el-col>
+            <el-col :span="16">
+              <el-input> </el-input>
+            </el-col>
+          </el-row>
+
+          <div>
+            <div v-for="(target, index) in onebotTargets" :key="index">
+              <span>类型 {{ target.type }}</span>
+              <span>{{ target.identifier }}</span>
             </div>
           </div>
+
+          <el-button @click="enableItemEdit('update')"
+            >编辑推送目标列表</el-button
+          >
         </el-card>
       </el-col>
 
-      <el-col :span="16">
+      <el-col :span="12">
         <el-card shadow="hover">
-          <el-input
-            type="textarea"
-            :rows="8"
-            placeholder="请输入Cookie"
-            v-model="cookie"
-            style="margin-bottom: 16px"
-          >
-          </el-input>
-
-          <div class="cookie-action-container">
-            <el-button
-              id="cookie-check-button"
-              type="primary"
-              @click="checkCookie()"
-              >检测cookie</el-button
-            >
-            <el-button
-              id="cookie-update-button"
-              type="primary"
-              @click="updateCookie()"
-              :disabled="!isValid"
-              >替换cookie</el-button
-            >
-          </div>
+          <div class="section-title">Server酱推送</div>
+          地址<el-input></el-input>
         </el-card>
       </el-col>
     </el-row>
@@ -92,6 +76,7 @@ import { mixins } from "vue-class-component";
 import { WithLogNotify } from "../mixins/common";
 
 import userModule from "@store/user";
+import pushModule from "@store/push";
 
 import * as moduleRequests from "@main/requests";
 import { remote } from "electron";
@@ -101,6 +86,10 @@ const remoteRequests: typeof moduleRequests =
 
 @Component({})
 export default class Login extends mixins(WithLogNotify) {
+  enableItemEdit(action: "update") {
+    pushModule.enableItemEdit({ action });
+  }
+
   // 从db同步，无引用
   account = userModule.user.account;
   password = userModule.user.password;
@@ -123,6 +112,10 @@ export default class Login extends mixins(WithLogNotify) {
         message: "请登录，或者手动替换有效cookie",
       });
     }
+  }
+
+  get onebotTargets() {
+    return pushModule.onebotTargets;
   }
 
   async checkCookie() {
@@ -206,29 +199,11 @@ export default class Login extends mixins(WithLogNotify) {
   border-radius: 10px;
 }
 
-.login-button-container {
-  display: flex;
-  justify-content: center;
-
-  #login-button {
-    width: 150px;
-  }
-}
-
-.cookie-action-container {
-  display: flex;
-  justify-content: center;
-}
-
-.watch-method-title {
+.section-title {
   font-size: 24px;
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-bottom: 16px;
-}
-
-.watch-method-choice {
-  display: flex;
-  justify-content: center;
 }
 </style>

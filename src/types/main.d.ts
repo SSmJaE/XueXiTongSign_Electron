@@ -79,14 +79,18 @@ interface IParsedUTC {
     [taskId: string]: IParsedDetail;
 }
 
-interface IOnebotConf{
-    enabled: boolean,
-    address: string,
-    groupId: number,
-    auth?:{
-        username: string,
-        password: string
-    }
+interface IOnebotConf {
+    enabled: boolean;
+    address: string;
+    // groupId: number;
+    targets: {
+        type: "group" | "friend";
+        id: number;
+    }[];
+    auth?: {
+        username: string;
+        password: string;
+    };
 }
 
 interface IDataBase {
@@ -94,7 +98,14 @@ interface IDataBase {
     tasks: ITask[];
     parsedUTC: IParsedUTC;
     signedActivities: number[];
-    onebot: IOnebotConf
+    watch: {
+        interval: boolean;
+        im: boolean;
+    };
+    push: {
+        onebot: IOnebotConf;
+        serverChan: any;
+    };
 }
 
 type LoggerLevel = "debug" | "info" | "error" | "warning" | "success";
@@ -105,4 +116,10 @@ interface ILog {
     message: string;
 }
 
-type SignTypes = "normal" | "location" | "gesture" | "picture";
+type SignType = "normal" | "location" | "gesture" | "picture" | "qrcode";
+
+interface IOnebotTarget {
+    id?: string;
+    type: "group" | "friend";
+    identifier?: number;
+}

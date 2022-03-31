@@ -1,13 +1,17 @@
-import { app, BrowserWindow } from "electron";
+import { IpcLogger } from "@src/utils/IpcLogger";
+import { app, BrowserWindow, ipcMain } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import { connectIM, initialImEnvironment } from "./im";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
     // eslint-disable-line global-require
     app.quit();
 }
+
+const mainWindowHandle: BrowserWindow = undefined;
 
 const createWindow = (): void => {
     // Create the browser window.
@@ -68,3 +72,13 @@ app.on("activate", () => {
 // code. You can also put them in separate files and import them here.
 
 (global as any).remoteRequests = require("./requests");
+// (global as any).remoteIm = require("./im");
+
+const logger = new IpcLogger(mainWindowHandle);
+
+initialImEnvironment(logger);
+// import "../../static/Easemob-chat-3.6.3";
+
+ipcMain.on("connect", (event, uid: number, cookie: string, imToken: string) => {
+    connectIM(uid, cookie, imToken);
+});

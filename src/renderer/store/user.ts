@@ -6,6 +6,7 @@ import logger from "@src/utils/logger";
 const userCollection = db.get("user");
 
 @Module({
+    namespaced: true,
     name: "user",
     store,
     dynamic: true,
