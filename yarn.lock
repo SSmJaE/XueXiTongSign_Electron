@@ -1253,6 +1253,13 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
+"@timfish/webpack-asset-relocator-loader@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npmmirror.com/@timfish/webpack-asset-relocator-loader/-/webpack-asset-relocator-loader-0.1.0.tgz#26d49e2ffdc0127489871fcb32d69ccf1be9da23"
+  integrity sha512-Z0tYkI3NSngJOGULCL8Fv+npy7k0JSQ7nWcfCEA70OJKMHRbP+OBKPUJVD2qRgfnDcmZuV99SzynKrRLot0faA==
+  dependencies:
+    "@vercel/webpack-asset-relocator-loader" "1.4.1"
+
 "@tootallnate/once@2":
   version "2.0.0"
   resolved "https://registry.npmmirror.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
@@ -1509,6 +1516,11 @@
   dependencies:
     "@typescript-eslint/types" "4.21.0"
     eslint-visitor-keys "^2.0.0"
+
+"@vercel/webpack-asset-relocator-loader@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmmirror.com/@vercel/webpack-asset-relocator-loader/-/webpack-asset-relocator-loader-1.4.1.tgz#c55fc0f46503b99a6f2321380c9b0f44b4faa703"
+  integrity sha512-p0P5sSfzhZ0HkNgvtOKs62cOZCK6avE28A8fEIE5vpKkhPXOlcXFtbUmIOqH3jYC4CjLOqwTU48cx3ewkGKQ9g==
 
 "@vue/component-compiler-utils@^3.1.0":
   version "3.2.0"

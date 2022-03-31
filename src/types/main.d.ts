@@ -93,15 +93,17 @@ interface IOnebotConf {
     };
 }
 
+interface IWatchMethod {
+    interval: boolean;
+    im: boolean;
+}
+
 interface IDataBase {
     user: IUser;
     tasks: ITask[];
     parsedUTC: IParsedUTC;
     signedActivities: number[];
-    watch: {
-        interval: boolean;
-        im: boolean;
-    };
+    watch: IWatchMethod;
     push: {
         onebot: IOnebotConf;
         serverChan: any;

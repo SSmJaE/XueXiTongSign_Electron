@@ -2,104 +2,109 @@
 
 import jsdom from "jsdom";
 
-import { sleep } from "../utils/common";
-import { getImToken } from "./requests";
 import { IpcLogger } from "@src/utils/IpcLogger";
 
-export function initialImEnvironment(logger: IpcLogger) {
-    const { JSDOM } = jsdom;
-    const { window } = new JSDOM("<!doctype html><html><body></body></html>", {
-        url: "https://im.chaoxing.com/webim/me",
-    });
+import { sleep } from "../utils/common";
+import { getImToken } from "./requests";
 
-    //将window对象设置为nodejs中全局对象;
-    (global as any).window = window;
-    (global as any).navigator = window.navigator;
-    (global as any).location = window.location;
-    (global as any).document = window.document;
-    (global as any).WebSocket = window.WebSocket;
+// export function initialImEnvironment(logger: IpcLogger) {
+//     const { JSDOM } = jsdom;
+//     const { window } = new JSDOM("<!doctype html><html><body></body></html>", {
+//         url: "https://im.chaoxing.com/webim/me",
+//     });
 
-    window.WebIM.config = {
-        xmppURL: "https://im-api-vip6-v2.easecdn.com/ws",
-        apiURL: "https://a1-vip6.easecdn.com",
-        appkey: "cx-dev#cxstudy",
-        Host: "easemob.com",
-        https: true,
-        isHttpDNS: false,
-        isMultiLoginSessions: true,
-        isAutoLogin: true,
-        isWindowSDK: false,
-        isSandBox: false,
-        isDebug: false,
-        autoReconnectNumMax: Number.POSITIVE_INFINITY,
-        autoReconnectInterval: 2,
-        isWebRTC: true,
-        heartBeatWait: 2000,
-        delivery: false,
-    };
-    window.WebIM.conn = new window.WebIM.connection({
-        appKey: window.WebIM.config.appkey,
-        isHttpDNS: window.WebIM.config.isHttpDNS,
-        isMultiLoginSessions: window.WebIM.config.isMultiLoginSessions,
-        host: window.WebIM.config.Host,
-        https: window.WebIM.config.https,
-        url: window.WebIM.config.xmppURL,
-        apiUrl: window.WebIM.config.apiURL,
-        isAutoLogin: false,
-        heartBeatWait: window.WebIM.config.heartBeatWait,
-        autoReconnectNumMax: window.WebIM.config.autoReconnectNumMax,
-        autoReconnectInterval: window.WebIM.config.autoReconnectInterval,
-        isStropheLog: window.WebIM.config.isStropheLog,
-        delivery: window.WebIM.config.delivery,
-        isDebug: window.WebIM.config.isDebug,
-    });
+//     //将window对象设置为nodejs中全局对象;
+//     (global as any).window = window;
+//     (global as any).navigator = window.navigator;
+//     (global as any).location = window.location;
+//     (global as any).document = window.document;
+//     (global as any).WebSocket = window.WebSocket;
+// }
 
-    window.WebIM.conn.listen({
-        onOpened: function(message: any) {
-            logger.success("IM 协议连接成功");
-        },
-        onClosed: function(message: any) {
-            logger.warning("IM 协议连接关闭");
-        },
-        onOnline: function() {},
-        onOffline: function() {
-            logger.warning("IM 下线");
-        },
-        onTextMessage: function(message: any) {
-            logger.info(`IM 协议收到文本消息 ${JSON.stringify(message)}`);
+// export function setupWebIm(logger: IpcLogger) {
+//     const window = global.window;
 
-            try {
-                handleImMessage(message, logger);
-            } catch (e) {
-                logger.error(`处理 IM 消息时出现异常，可能不是活动消息 ${e}`);
-            }
-        },
-        onError: async function(message: { type: number }) {
-            logger.warning("IM 协议错误");
+//     window.WebIM.config = {
+//         xmppURL: "https://im-api-vip6-v2.easecdn.com/ws",
+//         apiURL: "https://a1-vip6.easecdn.com",
+//         appkey: "cx-dev#cxstudy",
+//         Host: "easemob.com",
+//         https: true,
+//         isHttpDNS: false,
+//         isMultiLoginSessions: true,
+//         isAutoLogin: true,
+//         isWindowSDK: false,
+//         isSandBox: false,
+//         isDebug: false,
+//         autoReconnectNumMax: Number.POSITIVE_INFINITY,
+//         autoReconnectInterval: 2,
+//         isWebRTC: true,
+//         heartBeatWait: 2000,
+//         delivery: false,
+//     };
+//     window.WebIM.conn = new window.WebIM.connection({
+//         appKey: window.WebIM.config.appkey,
+//         isHttpDNS: window.WebIM.config.isHttpDNS,
+//         isMultiLoginSessions: window.WebIM.config.isMultiLoginSessions,
+//         host: window.WebIM.config.Host,
+//         https: window.WebIM.config.https,
+//         url: window.WebIM.config.xmppURL,
+//         apiUrl: window.WebIM.config.apiURL,
+//         isAutoLogin: false,
+//         heartBeatWait: window.WebIM.config.heartBeatWait,
+//         autoReconnectNumMax: window.WebIM.config.autoReconnectNumMax,
+//         autoReconnectInterval: window.WebIM.config.autoReconnectInterval,
+//         isStropheLog: window.WebIM.config.isStropheLog,
+//         delivery: window.WebIM.config.delivery,
+//         isDebug: window.WebIM.config.isDebug,
+//     });
 
-            if (message.type === 40) {
-                logger.warning("IM 协议身份验证失败，重新获取 token");
+//     window.WebIM.conn.listen({
+//         onOpened: function(message: any) {
+//             logger.success("IM 协议连接成功");
+//         },
+//         onClosed: function(message: any) {
+//             logger.warning("IM 协议连接关闭");
+//         },
+//         onOnline: function() {},
+//         onOffline: function() {
+//             logger.warning("IM 下线");
+//         },
+//         onTextMessage: function(message: any) {
+//             logger.info(`IM 协议收到文本消息 ${JSON.stringify(message)}`);
 
-                window.WebIM.conn.close();
-                await sleep(2000);
+//             try {
+//                 handleImMessage(message, logger);
+//             } catch (e) {
+//                 logger.error(`处理 IM 消息时出现异常，可能不是活动消息 ${e}`);
+//             }
+//         },
+//         onError: async function(message: { type: number }) {
+//             logger.warning("IM 协议错误");
 
-                const token = await getImToken(userInfoCache.cookie);
-                connectIM(userInfoCache.uid, userInfoCache.cookie, token);
-            }
-        },
-        onEmojiMessage: function(message: any) {},
-        onPictureMessage: function(message: any) {},
-        onCmdMessage: function(message: any) {},
-        onAudioMessage: function(message: any) {},
-        onLocationMessage: function(message: any) {},
-        onFileMessage: function(message: any) {},
-        onVideoMessage: function(message: any) {},
-        onPresence: function(message: any) {},
-        onRoster: function(message: any) {},
-        onInviteMessage: function(message: any) {},
-        onBlacklistUpdate: function(list: any) {},
-    });
-}
+//             if (message.type === 40) {
+//                 logger.warning("IM 协议身份验证失败，重新获取 token");
+
+//                 window.WebIM.conn.close();
+//                 await sleep(2000);
+
+//                 const token = await getImToken(userInfoCache.cookie);
+//                 connectIM(userInfoCache.uid, userInfoCache.cookie, token);
+//             }
+//         },
+//         onEmojiMessage: function(message: any) {},
+//         onPictureMessage: function(message: any) {},
+//         onCmdMessage: function(message: any) {},
+//         onAudioMessage: function(message: any) {},
+//         onLocationMessage: function(message: any) {},
+//         onFileMessage: function(message: any) {},
+//         onVideoMessage: function(message: any) {},
+//         onPresence: function(message: any) {},
+//         onRoster: function(message: any) {},
+//         onInviteMessage: function(message: any) {},
+//         onBlacklistUpdate: function(list: any) {},
+//     });
+// }
 
 async function handleImMessage(message: ImMessage, logger: IpcLogger) {
     if (message.data === "test") {

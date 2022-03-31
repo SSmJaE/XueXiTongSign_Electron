@@ -1,3 +1,9 @@
+interface ImInterface {
+    config: any;
+    conn: any;
+    connection: any;
+}
+
 interface ImMessage {
     id: string;
     type: string;

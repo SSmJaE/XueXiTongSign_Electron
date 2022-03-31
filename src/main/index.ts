@@ -3,7 +3,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
-import { connectIM, initialImEnvironment } from "./im";
+// import { connectIM, setupWebIm } from "./im";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -24,6 +24,7 @@ const createWindow = (): void => {
             enableRemoteModule: true,
             contextIsolation: false,
         },
+        autoHideMenuBar: true,
     });
 
     // and load the index.html of the app.
@@ -76,9 +77,33 @@ app.on("activate", () => {
 
 const logger = new IpcLogger(mainWindowHandle);
 
-initialImEnvironment(logger);
+// import jsdom from "jsdom";
+// const { JSDOM } = jsdom;
+// const { window } = new JSDOM("<!doctype html><html><body></body></html>", {
+//     url: "https://im.chaoxing.com/webim/me",
+// });
+
+// //将window对象设置为nodejs中全局对象;
+// (global as any).window = window;
+// (global as any).navigator = window.navigator;
+// (global as any).location = window.location;
+// (global as any).document = window.document;
+// (global as any).WebSocket = window.WebSocket;
 // import "../../static/Easemob-chat-3.6.3";
 
+// console.log(window);
+// console.log(global.window);
+
+// initialImEnvironment(logger);
+// setupWebIm(logger);
+// console.log("easemob initial complete");
+
 ipcMain.on("connect", (event, uid: number, cookie: string, imToken: string) => {
-    connectIM(uid, cookie, imToken);
+    try {
+        // console.log(window.webIM);
+        // connectIM(uid, cookie, imToken);
+    } catch (e) {
+        console.error(e);
+        logger.error(e);
+    }
 });

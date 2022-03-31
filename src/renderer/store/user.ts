@@ -4,6 +4,7 @@ import db from "@src/utils/database";
 import logger from "@src/utils/logger";
 
 const userCollection = db.get("user");
+const watchCollection = db.get("watch");
 
 @Module({
     namespaced: true,
@@ -13,6 +14,7 @@ const userCollection = db.get("user");
 })
 export class UserModule extends VuexModule {
     user: IUser = userCollection.value();
+    watchMethod: IWatchMethod = watchCollection.value();
 
     @Mutation
     updateUser(fields: Partial<IUser>) {
@@ -20,6 +22,14 @@ export class UserModule extends VuexModule {
 
         this.user = newUser;
         userCollection.assign(newUser).write();
+    }
+
+    @Mutation
+    updateWatchMethod(fields: Partial<IWatchMethod>) {
+        const newWatchMethod = { ...this.watchMethod, ...fields };
+
+        this.watchMethod = newWatchMethod;
+        watchCollection.assign(newWatchMethod).write();
     }
 }
 

@@ -6,12 +6,11 @@ import { formatDateTime } from "./common";
 
 const remoteRequests: typeof moduleRequests = remote.getGlobal("remoteRequests");
 
-const PARSER = new DOMParser();
-
 export async function getCourses() {
     const response = await remoteRequests.getCourses(userModule.user.cookie);
     console.log(response);
 
+    const PARSER = new DOMParser();
     const htmlDom = PARSER.parseFromString(response, "text/html");
 
     const courseNodes = htmlDom.querySelectorAll<HTMLElement>(

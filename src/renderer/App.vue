@@ -25,6 +25,8 @@
     <TaskForm />
     <OnebotForm />
     <Disclaimer />
+
+    <!-- <iframe src="https://im.chaoxing.com/webim/me"></iframe> -->
   </div>
 </template>
 
@@ -58,6 +60,7 @@ const tasksCollection = db.get("tasks");
 
 import { remote } from "electron";
 import * as moduleRequests from "@main/requests";
+import { setupWebIm } from "@src/utils/im";
 // import * as moduleIm from "@main/im";
 
 const remoteRequests: typeof moduleRequests =
@@ -124,11 +127,28 @@ export default class App extends mixins(WithLogNotify) {
     });
 
     ipcRenderer.on("log", (...params) => {
+      console.log(params);
       const log = params[0] as any as ILog;
-      logger.log(log);
+
+      if (log.level === "success" || log.level === "error") {
+        this.withLogNotify({
+          level: log.level,
+          title: `操作${log.level === "success" ? "成功" : "失败"}`,
+          message: log.message,
+        });
+      } else {
+        logger.log(log);
+      }
     });
 
-    ipcRenderer.on("sign", (...params) => {});
+    ipcRenderer.on("sign", (...params) => {
+      console.log(params);
+    });
+
+    // if (userModule.watchMethod.im) {
+    //   setTimeout(this.connectIM, 10_000);
+    // }
+    // setupWebIm();
 
     this.startHeartBeat();
 
@@ -301,11 +321,19 @@ export default class App extends mixins(WithLogNotify) {
   }
 
   async connectIM() {
-    const uid = userModule.user.uid;
-    const cookie = userModule.user.cookie;
-    const token = await remoteRequests.getImToken(cookie);
+    try {
+      const uid = userModule.user.uid;
+      const cookie = userModule.user.cookie;
+      const token = await remoteRequests.getImToken(cookie);
 
-    ipcRenderer.send("connect", uid, cookie, token);
+      ipcRenderer.send("connect", uid, cookie, token);
+    } catch (error) {
+      this.withLogNotify({
+        level: "error",
+        title: "IM服务连接失败",
+        message: error,
+      });
+    }
   }
 }
 </script>

@@ -39,6 +39,8 @@
             <!-- </div> -->
           </el-row>
 
+          <el-row>启用</el-row>
+
           <el-row>
             <el-col :span="6"> Onebot协议端地址 </el-col>
             <el-col :span="16">
@@ -62,6 +64,7 @@
       <el-col :span="12">
         <el-card shadow="hover">
           <div class="section-title">Server酱推送</div>
+          <el-row>启用</el-row>
           地址<el-input></el-input>
         </el-card>
       </el-col>

@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import "element-ui/lib/theme-chalk/index.css";
+// import "../../static/Easemob-chat-3.6.3.js";
 
 import ElementUI from "element-ui";
 import Vue from "vue";

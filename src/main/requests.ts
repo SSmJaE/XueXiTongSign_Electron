@@ -7,6 +7,7 @@ import tough from "tough-cookie";
 axiosCookieJarSupport(axios);
 
 const cookieJar = new tough.CookieJar();
+const { JSDOM } = jsdom;
 
 function generateUserAgent(platform: "desktop" | "mobile") {}
 
@@ -213,8 +214,7 @@ export async function getImToken(cookie: string) {
         responseType: "text",
     });
 
-    const PARSER = new DOMParser();
-    const htmlDom = PARSER.parseFromString(response, "text/html");
+    const htmlDom = new JSDOM(response ).window.document;
     const token = htmlDom.querySelector("#myToken").textContent;
 
     return token;

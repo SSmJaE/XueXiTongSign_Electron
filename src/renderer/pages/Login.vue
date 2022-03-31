@@ -38,7 +38,12 @@
                 content="当课程在设定的时间范围内，间隔一定时间查询是否有签到"
                 placement="bottom"
               >
-                <el-checkbox v-model="checked1" label="间隔查询" border />
+                <el-checkbox
+                  :value="watchMethod.interval"
+                  @change="updateWatchMethod('interval', $event)"
+                  label="间隔查询"
+                  border
+                />
               </el-tooltip>
               <el-tooltip
                 class="item"
@@ -46,7 +51,13 @@
                 content="通过超星接口，自动接收对应课程的签到任务，且当课程在设定的时间范围内，进行签到"
                 placement="bottom"
               >
-                <el-checkbox v-model="checked2" label="接受推送" border />
+                <el-checkbox
+                  :value="watchMethod.im"
+                  @change="updateWatchMethod('im', $event)"
+                  label="接受推送"
+                  border
+                  disabled
+                />
               </el-tooltip>
             </div>
           </div>
@@ -105,6 +116,7 @@ export default class Login extends mixins(WithLogNotify) {
   account = userModule.user.account;
   password = userModule.user.password;
   cookie = userModule.user.cookie;
+  watchMethod = userModule.watchMethod;
 
   isValid = false;
 
@@ -197,6 +209,13 @@ export default class Login extends mixins(WithLogNotify) {
     }
 
     return isValid;
+  }
+
+  updateWatchMethod(watchMethod: keyof IWatchMethod, status: boolean) {
+    // 同步至db
+    userModule.updateWatchMethod({
+      [watchMethod]: status,
+    });
   }
 }
 </script>
