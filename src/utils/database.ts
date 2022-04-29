@@ -23,12 +23,19 @@ db.defaults<IDataBase>({
         im: true,
     },
     push: {
-        onebot: {
-            enabled: false,
-            address: "http://127.0.0.1/",
-            targets: [],
+        level: {
+            onlySign: true,
+            log: false,
+            logLevel: "success",
         },
-        serverChan: {},
+        onebot: {
+            enable: false,
+            address: "http://127.0.0.1/",
+        },
+        onebotTargets: [],
+        serverChan: {
+            enable: false,
+        },
     },
 }).write();
 

@@ -80,13 +80,9 @@ interface IParsedUTC {
 }
 
 interface IOnebotConf {
-    enabled: boolean;
+    enable: boolean;
     address: string;
     // groupId: number;
-    targets: {
-        type: "group" | "friend";
-        id: number;
-    }[];
     auth?: {
         username: string;
         password: string;
@@ -98,6 +94,15 @@ interface IWatchMethod {
     im: boolean;
 }
 
+interface IPushLevel {
+    onlySign: boolean;
+    log: boolean;
+    logLevel: LoggerLevel;
+}
+
+interface IServerChan {
+    enable: boolean;
+}
 interface IDataBase {
     user: IUser;
     tasks: ITask[];
@@ -105,12 +110,17 @@ interface IDataBase {
     signedActivities: number[];
     watch: IWatchMethod;
     push: {
+        level: IPushLevel;
         onebot: IOnebotConf;
-        serverChan: any;
+        serverChan: IServerChan;
+        onebotTargets: {
+            type: "group" | "friend";
+            id: number;
+        }[];
     };
 }
 
-type LoggerLevel = "debug" | "info" | "error" | "warning" | "success";
+type LoggerLevel = "debug" | "info" | "warning" | "error" | "success";
 
 interface ILog {
     level: LoggerLevel;

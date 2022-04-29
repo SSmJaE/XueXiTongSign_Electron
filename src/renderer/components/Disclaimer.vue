@@ -9,7 +9,7 @@
     center
   >
     <div>
-      小工具唯一发布地址 https://github.com/SSmJaE/XueXiTonsSign_Electron
+      小工具唯一发布地址 https://github.com/SSmJaE/XueXiTongSign_Electron
     </div>
     <div>建议严格设置监控时间段，并且设置较大的检测频率</div>
     <div>防止给服务器带来压力，己所不欲，勿施于人</div>
@@ -213,9 +213,8 @@ export default class TaskForm extends Vue {
               break;
 
             case 8:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector(".course-create-button");
+              this._introItems[this._currentStep].element =
+                document.querySelector(".course-create-button");
               this._introItems[this._currentStep].position = "right";
               break;
 
@@ -227,38 +226,33 @@ export default class TaskForm extends Vue {
               break;
 
             case 10:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector("#form-date-range");
+              this._introItems[this._currentStep].element =
+                document.querySelector("#form-date-range");
               this._introItems[this._currentStep].position = "bottom";
 
               break;
 
             case 11:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector("#form-course-time-container");
+              this._introItems[this._currentStep].element =
+                document.querySelector("#form-course-time-container");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
             case 12:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector(".form-course-time-range");
+              this._introItems[this._currentStep].element =
+                document.querySelector(".form-course-time-range");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
             case 13:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector("#form-frequency");
+              this._introItems[this._currentStep].element =
+                document.querySelector("#form-frequency");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
             case 14:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector("#form-confirm-button");
+              this._introItems[this._currentStep].element =
+                document.querySelector("#form-confirm-button");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
@@ -266,9 +260,8 @@ export default class TaskForm extends Vue {
               taskModule.cancelItemEdit();
               eventBus.$emit("fake-activities");
 
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector(".course-check-button");
+              this._introItems[this._currentStep].element =
+                document.querySelector(".course-check-button");
               this._introItems[this._currentStep].position = "right";
 
               break;
@@ -277,9 +270,8 @@ export default class TaskForm extends Vue {
               break;
 
             case 17:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector(".course-sign-button");
+              this._introItems[this._currentStep].element =
+                document.querySelector(".course-sign-button");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
@@ -294,23 +286,20 @@ export default class TaskForm extends Vue {
               break;
 
             case 20:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector("#task-table");
+              this._introItems[this._currentStep].element =
+                document.querySelector("#task-table");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
             case 21:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector(".task-actions");
+              this._introItems[this._currentStep].element =
+                document.querySelector(".task-actions");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
             case 22:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector(".task-edit");
+              this._introItems[this._currentStep].element =
+                document.querySelector(".task-edit");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
@@ -320,23 +309,20 @@ export default class TaskForm extends Vue {
               break;
 
             case 25:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector("#log-level");
+              this._introItems[this._currentStep].element =
+                document.querySelector("#log-level");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
             case 26:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector("#log-auto-slide");
+              this._introItems[this._currentStep].element =
+                document.querySelector("#log-auto-slide");
               this._introItems[this._currentStep].position = "bottom";
               break;
 
             case 27:
-              this._introItems[
-                this._currentStep
-              ].element = document.querySelector("#log-active-courses");
+              this._introItems[this._currentStep].element =
+                document.querySelector("#log-active-courses");
               this._introItems[this._currentStep].position = "bottom";
               break;
           }

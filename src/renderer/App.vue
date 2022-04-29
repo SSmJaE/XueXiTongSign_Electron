@@ -60,7 +60,7 @@ const tasksCollection = db.get("tasks");
 
 import { remote } from "electron";
 import * as moduleRequests from "@main/requests";
-import { setupWebIm } from "@src/utils/im";
+// import { setupWebIm } from "@src/utils/im";
 // import * as moduleIm from "@main/im";
 
 const remoteRequests: typeof moduleRequests =
@@ -253,7 +253,7 @@ export default class App extends mixins(WithLogNotify) {
       });
       //汇报给 onebot
       const onebotConf: IOnebotConf = db.get("onebot").value();
-      if (onebotConf.enabled)
+      if (onebotConf.enable)
         axios.post(
           onebotConf.address,
           {
@@ -320,20 +320,20 @@ export default class App extends mixins(WithLogNotify) {
     logger.debug(`当前活跃任务 ${buffer.length ? buffer.join("，") : "无"}`);
   }
 
-  async connectIM() {
-    try {
-      const uid = userModule.user.uid;
-      const cookie = userModule.user.cookie;
-      const token = await remoteRequests.getImToken(cookie);
+  // async connectIM() {
+  //   try {
+  //     const uid = userModule.user.uid;
+  //     const cookie = userModule.user.cookie;
+  //     const token = await remoteRequests.getImToken(cookie);
 
-      ipcRenderer.send("connect", uid, cookie, token);
-    } catch (error) {
-      this.withLogNotify({
-        level: "error",
-        title: "IM服务连接失败",
-        message: error,
-      });
-    }
-  }
+  //     ipcRenderer.send("connect", uid, cookie, token);
+  //   } catch (error) {
+  //     this.withLogNotify({
+  //       level: "error",
+  //       title: "IM服务连接失败",
+  //       message: error,
+  //     });
+  //   }
+  // }
 }
 </script>

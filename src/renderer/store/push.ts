@@ -1,22 +1,15 @@
-import store from "./index";
+import { CollectionChain, ObjectChain } from "lodash";
 import { getModule, Module, Mutation, MutationAction, VuexModule } from "vuex-module-decorators";
+
 import db from "@src/utils/database";
 import logger from "@src/utils/logger";
-import { ObjectEntries } from "@src/utils/common";
-import dayjs from "dayjs";
 
-import dayOfYear from "dayjs/plugin/dayOfYear";
-import isoWeek from "dayjs/plugin/isoWeek";
-import { CollectionChain } from "lodash";
-dayjs.extend(dayOfYear);
-dayjs.extend(isoWeek);
+import store from "./index";
 
-const tasksCollection = db.get("tasks");
-const signedCollection = db.get("signedActivities");
-const onebotCollection = db.get("push.onebot") as CollectionChain<IOnebotConf>;
-const onebotTargetsCollection = db.get("push.onebot.targets") as CollectionChain<IOnebotTarget>;
-
-const defaultTargetConfig: IOnebotTarget[] = [];
+const pushLevelCollection = db.get("push.level") as ObjectChain<IPushLevel>;
+const onebotTargetsCollection = db.get("push.onebotTargets") as CollectionChain<IOnebotTarget>;
+const onebotCollection = db.get("push.onebot") as ObjectChain<IOnebotConf>;
+const serverChanCollection = db.get("push.serverChan") as ObjectChain<IServerChan>;
 
 @Module({
     namespaced: true,
@@ -26,10 +19,13 @@ const defaultTargetConfig: IOnebotTarget[] = [];
 })
 export class PushModule extends VuexModule {
     onebotTargets: IOnebotTarget[] = [];
+    pushLevel = pushLevelCollection.value();
+    onebotConf = onebotCollection.value();
+    serverChan = serverChanCollection.value();
 
     @Mutation
     updateItem() {
-        db.set("push.onebot.targets", this.itemBuffer).write();
+        db.set("push.onebotTargets", this.itemBuffer).write();
     }
 
     @Mutation
@@ -66,6 +62,30 @@ export class PushModule extends VuexModule {
     @Mutation
     fakeTask(task: ITask) {
         // this.tasks = [task];
+    }
+
+    @Mutation
+    updatePushLevel(fields: Partial<IPushLevel>) {
+        const newPushLevel = { ...this.pushLevel, ...fields };
+
+        this.pushLevel = newPushLevel;
+        pushLevelCollection.assign(newPushLevel).write();
+    }
+
+    @Mutation
+    updateOnebotConf(fields: Partial<IOnebotConf>) {
+        const onebotConf = { ...this.onebotConf, ...fields };
+
+        this.onebotConf = onebotConf;
+        pushLevelCollection.assign(onebotConf).write();
+    }
+
+    @Mutation
+    updateServerChan(fields: Partial<IServerChan>) {
+        const serverChan = { ...this.serverChan, ...fields };
+
+        this.serverChan = serverChan;
+        pushLevelCollection.assign(serverChan).write();
     }
 }
 

@@ -3,26 +3,44 @@
     <el-row style="margin-bottom: 16px">
       <el-card shadow="hover">
         <div class="section-title">消息推送等级</div>
-        <el-radio :label="3">只推送签到情况(成功/失败)</el-radio>
+        <el-checkbox
+          label="只推送签到情况(成功/失败)"
+          :value="pushLevel.onlySign"
+          @change="updatePushLevel('onlySign', $event)"
+          border
+          style="margin-bottom: 8px"
+        ></el-checkbox>
 
         <el-row>
-          <el-col :span="6">
-            <el-radio :label="6">日志等级 success & error</el-radio>
-          </el-col>
+          <!-- <el-col :span="3"> -->
+          <el-checkbox
+            label="日志等级"
+            :value="pushLevel.log"
+            @change="updatePushLevel('log', $event)"
+            border
+          >
+          </el-checkbox>
+          <!-- </el-col> -->
 
-          <el-col :span="6">
-            <div>
-              <el-select v-model="logLevel" placeholder="日志等级">
-                <el-option
-                  v-for="level in logLevels"
-                  :key="level"
-                  :label="level"
-                  :value="level"
-                >
-                </el-option>
-              </el-select>
-            </div>
-          </el-col>
+          <!-- <el-col :span="21"> -->
+          <!-- <div> -->
+          <el-select
+            :disabled="!pushLevel.log"
+            :value="pushLevel.logLevel"
+            @change="updatePushLevel('logLevel', $event)"
+            placeholder="日志等级"
+            style="width: 100px"
+          >
+            <el-option
+              v-for="level in logLevels"
+              :key="level"
+              :label="level"
+              :value="level"
+            >
+            </el-option>
+          </el-select>
+          <!-- </div> -->
+          <!-- </el-col> -->
         </el-row>
       </el-card>
     </el-row>
@@ -39,21 +57,35 @@
             <!-- </div> -->
           </el-row>
 
-          <el-row>启用</el-row>
-
-          <el-row>
-            <el-col :span="6"> Onebot协议端地址 </el-col>
+          <el-row class="entry-row">
+            <el-col :span="6"> 启用 </el-col>
             <el-col :span="16">
-              <el-input> </el-input>
+              <el-switch
+                :value="onebotEnable"
+                @change="updateOnebotConf('enable', $event)"
+              >
+              </el-switch>
             </el-col>
           </el-row>
 
-          <div>
-            <div v-for="(target, index) in onebotTargets" :key="index">
+          <el-row class="entry-row">
+            <el-col :span="6"> 协议端地址 </el-col>
+            <el-col :span="16">
+              <el-input size="small" placeholder="http://host:port/" />
+            </el-col>
+          </el-row>
+
+          <!-- <div> -->
+          <!-- <div v-for="(target, index) in onebotTargets" :key="index">
               <span>类型 {{ target.type }}</span>
               <span>{{ target.identifier }}</span>
-            </div>
-          </div>
+            </div> -->
+
+          <el-table :data="onebotTargets" style="width: 100%">
+            <el-table-column prop="type" label="类型"> </el-table-column>
+            <el-table-column prop="identifier" label="号码"> </el-table-column>
+          </el-table>
+          <!-- </div> -->
 
           <el-button @click="enableItemEdit('update')"
             >编辑推送目标列表</el-button
@@ -64,7 +96,7 @@
       <el-col :span="12">
         <el-card shadow="hover">
           <div class="section-title">Server酱推送</div>
-          <el-row>启用</el-row>
+          <el-row class="entry-row">启用</el-row>
           地址<el-input></el-input>
         </el-card>
       </el-col>
@@ -83,116 +115,57 @@ import pushModule from "@store/push";
 
 import * as moduleRequests from "@main/requests";
 import { remote } from "electron";
+import { LOG_LEVELS } from "@src/utils/logger";
 
 const remoteRequests: typeof moduleRequests =
   remote.getGlobal("remoteRequests");
 
 @Component({})
 export default class Login extends mixins(WithLogNotify) {
+  logLevels = Object.keys(LOG_LEVELS);
+
   enableItemEdit(action: "update") {
     pushModule.enableItemEdit({ action });
   }
 
   // 从db同步，无引用
-  account = userModule.user.account;
-  password = userModule.user.password;
-  cookie = userModule.user.cookie;
+  pushLevel = pushModule.pushLevel;
+  onebotConf = pushModule.onebotConf;
+  serverChan = pushModule.serverChan;
 
-  isValid = false;
-
-  @Watch("cookie")
-  onCookieChange() {
-    this.isValid = false;
+  get onebotEnable() {
+    return this.onebotConf.enable;
   }
 
-  async created() {
-    if (this.cookie) {
-      const isValid = await this.isCookieValid(this.cookie);
-    } else {
-      this.withLogNotify({
-        level: "error",
-        title: "未提供Cookie",
-        message: "请登录，或者手动替换有效cookie",
-      });
-    }
+  updatePushLevel(level: keyof IPushLevel, status: boolean) {
+    // 同步至db
+    console.log(status);
+
+    pushModule.updatePushLevel({
+      [level]: status,
+    });
+  }
+
+  updateOnebotConf(level: keyof IOnebotConf, status: boolean) {
+    // 同步至db
+    console.log(status);
+
+    pushModule.updateOnebotConf({
+      [level]: status,
+    });
+  }
+
+  updateServerChan(level: keyof IServerChan, status: boolean) {
+    // 同步至db
+    console.log(status);
+
+    pushModule.updateServerChan({
+      [level]: status,
+    });
   }
 
   get onebotTargets() {
     return pushModule.onebotTargets;
-  }
-
-  async checkCookie() {
-    if (this.cookie) {
-      const isValid = await this.isCookieValid(this.cookie);
-      this.isValid = isValid;
-    } else {
-      this.withLogNotify({
-        level: "error",
-        title: "Cookie无效",
-        message: "Cookie不能为空",
-      });
-    }
-  }
-
-  async updateCookie() {
-    const uid = /UID=(\d*)/.exec(this.cookie)![1];
-
-    // 同步至db
-    userModule.updateUser({
-      uid: parseInt(uid),
-      cookie: this.cookie,
-    });
-
-    this.withLogNotify({
-      level: "success",
-      title: "操作成功",
-      message: "cookie替换成功",
-    });
-  }
-
-  async login() {
-    try {
-      const { cookie, uid } = await remoteRequests.login(
-        this.account,
-        this.password
-      );
-
-      // 同步至db
-      userModule.updateUser({
-        account: this.account,
-        password: this.password,
-        uid,
-        cookie,
-      });
-
-      this.cookie = cookie;
-    } catch (error) {
-      this.withLogNotify({
-        level: "error",
-        title: "登录失败",
-        message: error,
-      });
-    }
-    //检测cookie有效性
-  }
-
-  async isCookieValid(cookie: string) {
-    const isValid = await remoteRequests.isCookieValid(cookie);
-
-    if (isValid) {
-      this.withLogNotify({
-        level: "success",
-        title: "Cookie有效",
-      });
-    } else {
-      this.withLogNotify({
-        level: "error",
-        title: "Cookie失效",
-        message: "请重新登录，或者手动替换有效cookie",
-      });
-    }
-
-    return isValid;
   }
 }
 </script>
@@ -208,5 +181,11 @@ export default class Login extends mixins(WithLogNotify) {
   justify-content: center;
   align-items: center;
   margin-bottom: 16px;
+}
+
+.entry-row {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
 }
 </style>

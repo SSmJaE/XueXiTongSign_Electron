@@ -1,3 +1,5 @@
+import { pushService } from "./push";
+
 export const LOG_LEVELS = { debug: 0, info: 1, success: 2, warning: 3, error: 4 };
 
 export class Logger {
@@ -28,6 +30,7 @@ export class Logger {
         }
 
         this.logs.push({ ...option, time: new Date() });
+        pushService("log", option.message, option.level);
     }
 
     log(option: ILog) {

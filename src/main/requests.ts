@@ -1,13 +1,13 @@
 import axios from "axios";
 import axiosCookieJarSupport from "axios-cookiejar-support";
-import jsdom from "jsdom";
+// import jsdom from "jsdom";
 import queryString from "query-string";
 import tough from "tough-cookie";
 
 axiosCookieJarSupport(axios);
 
 const cookieJar = new tough.CookieJar();
-const { JSDOM } = jsdom;
+// const { JSDOM } = jsdom;
 
 function generateUserAgent(platform: "desktop" | "mobile") {}
 
@@ -204,18 +204,53 @@ export async function sign({ cookie, activeId, uid }: ISign): Promise<string> {
     });
 }
 
+// /** 获取连接学习通 easemob 即时通信的 token */
+// export async function getImToken(cookie: string) {
+//     const response: string = await axios.get("https://im.chaoxing.com/webim/me", {
+//         headers: {
+//             Cookie: cookie,
+//             "User-Agent": PC_AGENT,
+//         },
+//         responseType: "text",
+//     });
+
+//     const htmlDom = new JSDOM(response).window.document;
+//     const token = htmlDom.querySelector("#myToken").textContent;
+
+//     return token;
+// }
+
 /** 获取连接学习通 easemob 即时通信的 token */
-export async function getImToken(cookie: string) {
-    const response: string = await axios.get("https://im.chaoxing.com/webim/me", {
-        headers: {
-            Cookie: cookie,
-            "User-Agent": PC_AGENT,
+export async function pushToOnebot({
+    address,
+    targetType,
+    identifier,
+    message,
+}: {
+    address: string;
+    targetType: "group" | "friend";
+    identifier: string;
+    message: string;
+}) {
+    const url = address + "/" + targetType === "group" ? "send_group_msg" : "friend_message";
+
+    const response: string = await axios.post(url, {
+        headers: {},
+        data: {
+            [targetType === "group" ? "group" : "user" + "_id"]: identifier,
+            message: [
+                {
+                    type: "text",
+                    data: { text: message },
+                },
+            ],
         },
-        responseType: "text",
+        responseType: "json",
     });
 
-    const htmlDom = new JSDOM(response ).window.document;
-    const token = htmlDom.querySelector("#myToken").textContent;
+    const status = response;
 
-    return token;
+    return status;
 }
+
+export async function pushToServerChan() {}
